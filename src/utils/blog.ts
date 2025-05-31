@@ -1,5 +1,6 @@
 import type { BlogPost, ArticleData, TagInfo } from '../types/blog';
 import { formatISODate } from './date';
+import { DEFAULT_IMAGES } from '../config/constants';
 
 /**
  * ブログ記事をArticleDataに変換
@@ -8,7 +9,7 @@ export function transformBlogPost(post: BlogPost): ArticleData {
   return {
     title: post.data.title,
     description: post.data.description,
-    image: post.data.heroImage || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop",
+    image: post.data.heroImage || DEFAULT_IMAGES.ARTICLE,
     tags: post.data.tags,
     date: formatISODate(post.data.pubDate),
     slug: post.slug,
@@ -70,7 +71,3 @@ export function calculateTotalPages(totalItems: number, itemsPerPage: number): n
   return Math.ceil(totalItems / itemsPerPage);
 }
 
-/**
- * デフォルトの記事画像URL
- */
-export const DEFAULT_ARTICLE_IMAGE = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop";

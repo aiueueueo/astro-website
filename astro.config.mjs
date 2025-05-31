@@ -3,7 +3,7 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://your-blog.com', // 実際のドメインに変更してください
+  site: 'https://astro-blog.pages.dev', // Cloudflare Pages URL
   integrations: [
     tailwind(),
     sitemap()

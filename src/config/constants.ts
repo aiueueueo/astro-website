@@ -5,7 +5,7 @@
 // ページネーション設定
 export const PAGINATION = {
   POSTS_PER_PAGE: 6,
-  HOMEPAGE_POSTS: 3
+  HOMEPAGE_POSTS: 5
 } as const;
 
 // 関連記事設定

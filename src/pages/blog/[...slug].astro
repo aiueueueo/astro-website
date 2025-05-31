@@ -5,6 +5,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
+import SocialShare from '../../components/SocialShare.astro';
 import '../../styles/global.css';
 
 export async function getStaticPaths() {
@@ -38,6 +39,16 @@ function formatDate(date: Date) {
   <Header currentPage="blog" />
   
   <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Back to Blog Link - Top Left -->
+    <div class="mb-6">
+      <a 
+        href="/blog/"
+        class="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+      >
+        ← すべての記事に戻る
+      </a>
+    </div>
+
     <!-- Hero Section - Centered -->
     <div class="max-w-4xl mx-auto mb-8 flex justify-center">
       <div class="w-full max-w-3xl">
@@ -56,15 +67,6 @@ function formatDate(date: Date) {
       
       <!-- Article Header -->
       <header>
-        <!-- Back to Blog Link -->
-        <div class="mb-4">
-          <a 
-            href="/blog/"
-            class="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-          >
-            &lt; blogに戻る
-          </a>
-        </div>
         
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 text-left">
           {post.data.title}
@@ -114,28 +116,33 @@ function formatDate(date: Date) {
       <!-- Table of Contents -->
       <TableOfContents headings={headings} />
     </div>
+
+    <!-- Social Share Section -->
+    <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+      <div class="text-right">
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">この記事をシェア</p>
+        <div class="flex justify-end">
+          <SocialShare 
+            title={post.data.title}
+            url={`${Astro.site}/blog/${post.slug}/`}
+            description={post.data.description}
+          />
+        </div>
+      </div>
+    </div>
     
     <!-- Related Articles -->
     <RelatedArticles currentPost={post} maxResults={3} />
     
     <!-- Navigation -->
     <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-      <div class="flex justify-between items-center">
+      <div class="flex justify-center">
         <a 
           href="/blog/"
           class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
         >
           ← すべての記事に戻る
         </a>
-        
-        <div class="flex gap-4">
-          <button 
-            onclick="navigator.share && navigator.share({title: document.title, url: window.location.href})"
-            class="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          >
-            シェア
-          </button>
-        </div>
       </div>
     </div>
   </main>

@@ -1,0 +1,12 @@
+---
+import { formatShortDateString } from '../utils/date';
+
+export interface Props {
+  date: string;
+  class?: string;
+}
+
+const { date, class: className = "date-badge" } = Astro.props;
+---
+
+<time class={className} datetime={date}>{formatShortDateString(date)}</time>
