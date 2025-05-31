@@ -1,0 +1,143 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+
+export interface Props {
+  currentPost: CollectionEntry<'blog'>;
+  maxResults?: number;
+}
+
+const { currentPost, maxResults = 3 } = Astro.props;
+
+// 全ての公開記事を取得
+const allPosts = await getCollection('blog');
+const publishedPosts = allPosts.filter(post => 
+  !post.data.draft && post.slug !== currentPost.slug
+);
+
+// 関連度スコアを計算
+function calculateRelatedness(post: CollectionEntry<'blog'>) {
+  let score = 0;
+  const currentTags = currentPost.data.tags;
+  const postTags = post.data.tags;
+  
+  // タグの共通数でスコア計算
+  const commonTags = currentTags.filter(tag => postTags.includes(tag));
+  score += commonTags.length * 10; // 共通タグ1つにつき10点
+  
+  // 公開日の近さでボーナス（新しい記事優先）
+  const daysDiff = Math.abs(
+    (currentPost.data.pubDate.getTime() - post.data.pubDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  
+  if (daysDiff <= 30) score += 5;      // 1ヶ月以内: +5点
+  else if (daysDiff <= 90) score += 3; // 3ヶ月以内: +3点
+  else if (daysDiff <= 180) score += 1; // 6ヶ月以内: +1点
+  
+  return { post, score, commonTags };
+}
+
+// 関連記事を計算・ソート
+const relatedPosts = publishedPosts
+  .map(calculateRelatedness)
+  .filter(item => item.score > 0) // スコア0の記事は除外
+  .sort((a, b) => b.score - a.score) // スコア降順
+  .slice(0, maxResults)
+  .map(item => ({
+    ...item.post,
+    commonTags: item.commonTags,
+    score: item.score
+  }));
+
+// 関連記事がない場合は最新記事を表示
+const fallbackPosts = relatedPosts.length < maxResults 
+  ? publishedPosts
+      .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+      .slice(0, maxResults - relatedPosts.length)
+  : [];
+
+const finalPosts = [...relatedPosts, ...fallbackPosts].slice(0, maxResults);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('ja-JP', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+---
+
+{finalPosts.length > 0 && (
+  <section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+      関連記事
+    </h2>
+    
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {finalPosts.map((article) => (
+        <article class="group bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-sm hover:shadow-lg dark:shadow-gray-900/10 transition-all duration-200">
+          <a href={`/blog/${article.slug}/`} class="block">
+            <div class="aspect-[4/3] overflow-hidden">
+              <img 
+                src={article.data.heroImage || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop"} 
+                alt={article.data.title}
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                loading="lazy"
+              />
+            </div>
+            
+            <div class="p-4">
+              <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                {formatDate(article.data.pubDate)}
+              </div>
+              
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                {article.data.title}
+              </h3>
+              
+              <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
+                {article.data.description}
+              </p>
+              
+              <!-- Common Tags -->
+              {article.commonTags && article.commonTags.length > 0 && (
+                <div class="flex flex-wrap gap-1 mb-2">
+                  {article.commonTags.slice(0, 2).map((tag) => (
+                    <span class="inline-block px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded">
+                      {tag}
+                    </span>
+                  ))}
+                  {article.commonTags.length > 2 && (
+                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                      +{article.commonTags.length - 2}
+                    </span>
+                  )}
+                </div>
+              )}
+              
+              <!-- All Tags (fallback) -->
+              {(!article.commonTags || article.commonTags.length === 0) && (
+                <div class="flex flex-wrap gap-1">
+                  {article.data.tags.slice(0, 2).map((tag) => (
+                    <span class="inline-block px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

@@ -1,0 +1,115 @@
+---
+export interface Props {
+  headings: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
+}
+
+const { headings } = Astro.props;
+
+// h2とh3のみを表示
+const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
+---
+
+{filteredHeadings.length > 0 && (
+  <div class="toc-container">
+    <div class="toc-sticky">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        目次
+      </h3>
+      
+      <nav class="toc-nav">
+        <ul class="space-y-2">
+          {filteredHeadings.map((heading) => (
+            <li>
+              <a 
+                href={`#${heading.slug}`}
+                class={`block text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
+                  heading.depth === 2 
+                    ? 'text-gray-700 dark:text-gray-300 font-medium' 
+                    : 'text-gray-600 dark:text-gray-400 pl-4'
+                }`}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </div>
+)}
+
+
+<style>
+  .toc-container {
+    @apply w-64 flex-shrink-0;
+  }
+  
+  .toc-sticky {
+    @apply sticky bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm;
+    top: 6rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+  }
+  
+  .toc-nav ul {
+    @apply list-none p-0 m-0;
+  }
+  
+  .toc-nav a {
+    @apply no-underline;
+    line-height: 1.4;
+  }
+  
+  .toc-nav a:hover {
+    @apply underline;
+  }
+  
+  /* モバイルでは非表示 */
+  @media (max-width: 1024px) {
+    .toc-container {
+      @apply hidden;
+    }
+  }
+</style>
+
+<script>
+  // アクティブな見出しのハイライト
+  function updateActiveHeading() {
+    const headings = document.querySelectorAll('h2, h3');
+    const tocLinks = document.querySelectorAll('.toc-nav a');
+    
+    let activeHeading = null;
+    
+    headings.forEach((heading) => {
+      const rect = heading.getBoundingClientRect();
+      if (rect.top <= 100) {
+        activeHeading = heading;
+      }
+    });
+    
+    tocLinks.forEach((link) => {
+      link.classList.remove('active');
+    });
+    
+    if (activeHeading) {
+      const activeLink = document.querySelector(`.toc-nav a[href="#${activeHeading.id}"]`);
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+  }
+  
+  // スクロールイベントリスナー
+  window.addEventListener('scroll', updateActiveHeading);
+  updateActiveHeading();
+</script>
+
+<style is:global>
+  .toc-nav a.active {
+    @apply text-blue-600 dark:text-blue-400 font-medium;
+  }
+</style>

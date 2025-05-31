@@ -1,0 +1,99 @@
+---
+import type { ArticleData } from '../types/blog';
+import { formatShortDateString } from '../utils/date';
+import { tagToSlug } from '../utils/tags';
+import '../styles/components.css';
+
+export interface Props extends Omit<ArticleData, 'content'> {
+  compact?: boolean;
+}
+
+const { title, description, image, tags, date, slug, compact = false } = Astro.props;
+---
+
+{compact ? (
+  <!-- Compact layout for homepage -->
+  <article class="group">
+    <a href={`/blog/${slug}/`} class="block p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200">
+      <div class="flex gap-4">
+        <div class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
+          <img 
+            src={image} 
+            alt={title}
+            class="w-full h-full object-cover"
+            loading="lazy"
+          />
+        </div>
+        
+        <div class="flex-1 min-w-0">
+          <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            {title}
+          </h2>
+          
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
+            {description}
+          </p>
+          
+          <div class="flex items-center justify-between">
+            <div class="flex flex-wrap gap-1">
+              {tags.slice(0, 2).map((tag) => (
+                <a 
+                  href={`/tags/${tagToSlug(tag)}/`}
+                  class="tag inline-block px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                  onclick="event.stopPropagation()"
+                >
+                  {tag}
+                </a>
+              ))}
+            </div>
+            
+            <time class="text-xs text-gray-500 dark:text-gray-400" datetime={date}>
+              {formatShortDateString(date)}
+            </time>
+          </div>
+        </div>
+      </div>
+    </a>
+  </article>
+) : (
+  <!-- Grid layout for blog page -->
+  <article class="group bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-sm hover:shadow-lg dark:shadow-gray-900/10 transition-all duration-200">
+    <a href={`/blog/${slug}/`} class="block">
+      <div class="aspect-[4/3] overflow-hidden">
+        <img 
+          src={image} 
+          alt={title}
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+          loading="lazy"
+        />
+      </div>
+      
+      <div class="p-6">
+        <div class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+          {formatShortDateString(date)}
+        </div>
+        
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+          {title}
+        </h2>
+        
+        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+          {description}
+        </p>
+        
+        <div class="flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <a 
+              href={`/tags/${tagToSlug(tag)}/`} 
+              class="inline-block text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+              onclick="event.stopPropagation()"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      </div>
+    </a>
+  </article>
+)}
+

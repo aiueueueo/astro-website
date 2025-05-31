@@ -1,0 +1,91 @@
+---
+export interface Props {
+	title: string;
+	description?: string;
+	image?: string;
+	article?: boolean;
+}
+
+const { title, description = "Web開発とプログラミングに関するブログ", image, article = false } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const socialImage = image ? new URL(image, Astro.site) : new URL('/og-image.jpg', Astro.site);
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="canonical" href={canonicalURL} />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content={article ? "article" : "website"} />
+		<meta property="og:url" content={Astro.url} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={socialImage} />
+		<meta property="og:site_name" content="Blog" />
+		<meta property="og:locale" content="ja_JP" />
+		
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={Astro.url} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={socialImage} />
+		
+		<!-- Additional SEO -->
+		<meta name="robots" content="index, follow" />
+		<meta name="author" content="Blog" />
+		
+		<!-- RSS Feed -->
+		<link rel="alternate" type="application/rss+xml" title="Blog RSS Feed" href="/rss.xml" />
+	</head>
+	<body>
+		<slot />
+		<script>
+			// Dark mode toggle script
+			function initTheme() {
+				const stored = localStorage.getItem('theme');
+				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				const darkMode = stored === 'dark' || (!stored && prefersDark);
+				
+				if (darkMode) {
+					document.documentElement.classList.add('dark');
+				}
+			}
+			
+			function toggleTheme() {
+				const isDark = document.documentElement.classList.contains('dark');
+				if (isDark) {
+					document.documentElement.classList.remove('dark');
+					localStorage.setItem('theme', 'light');
+				} else {
+					document.documentElement.classList.add('dark');
+					localStorage.setItem('theme', 'dark');
+				}
+			}
+			
+			// Initialize theme on page load
+			initTheme();
+			
+			// Add event listener for theme toggle
+			document.addEventListener('DOMContentLoaded', () => {
+				const themeToggle = document.getElementById('theme-toggle');
+				if (themeToggle) {
+					themeToggle.addEventListener('click', toggleTheme);
+				}
+			});
+		</script>
+	</body>
+</html>
+
+<style>
+	html {
+		font-family: 'Inter', system-ui, sans-serif;
+	}
+</style>

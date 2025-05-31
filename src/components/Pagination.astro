@@ -1,0 +1,97 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  baseUrl: string;
+}
+
+const { currentPage, totalPages, baseUrl } = Astro.props;
+
+function generatePageNumbers(current: number, total: number) {
+  const pages: (number | string)[] = [];
+  
+  if (total <= 7) {
+    for (let i = 1; i <= total; i++) {
+      pages.push(i);
+    }
+  } else {
+    if (current <= 4) {
+      for (let i = 1; i <= 5; i++) {
+        pages.push(i);
+      }
+      pages.push('...');
+      pages.push(total);
+    } else if (current >= total - 3) {
+      pages.push(1);
+      pages.push('...');
+      for (let i = total - 4; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      pages.push('...');
+      for (let i = current - 1; i <= current + 1; i++) {
+        pages.push(i);
+      }
+      pages.push('...');
+      pages.push(total);
+    }
+  }
+  
+  return pages;
+}
+
+const pageNumbers = generatePageNumbers(currentPage, totalPages);
+---
+
+<nav class="flex items-center justify-center" aria-label="ページネーション">
+  <div class="flex items-center space-x-2">
+    <!-- Previous button -->
+    {currentPage > 1 ? (
+      <a 
+        href={currentPage === 2 ? baseUrl : `${baseUrl}/page/${currentPage - 1}`}
+        class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+      >
+        ＜
+      </a>
+    ) : (
+      <span class="px-3 py-1 text-sm bg-gray-300 text-gray-500 rounded cursor-not-allowed">
+        ＜
+      </span>
+    )}
+    
+    <!-- Page numbers -->
+    <div class="flex items-center space-x-1">
+      {pageNumbers.map((page) => (
+        page === '...' ? (
+          <span class="px-2 text-sm text-gray-500">...</span>
+        ) : page === currentPage ? (
+          <span class="px-3 py-1 text-sm bg-blue-600 text-white rounded">
+            {page}
+          </span>
+        ) : (
+          <a 
+            href={page === 1 ? baseUrl : `${baseUrl}/page/${page}`}
+            class="px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+          >
+            {page}
+          </a>
+        )
+      ))}
+    </div>
+    
+    <!-- Next button -->
+    {currentPage < totalPages ? (
+      <a 
+        href={`${baseUrl}/page/${currentPage + 1}`}
+        class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+      >
+        ＞
+      </a>
+    ) : (
+      <span class="px-3 py-1 text-sm bg-gray-300 text-gray-500 rounded cursor-not-allowed">
+        ＞
+      </span>
+    )}
+  </div>
+</nav>
