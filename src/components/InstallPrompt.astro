@@ -1,0 +1,132 @@
+---
+// PWAインストールプロンプト用のコンポーネント
+---
+
+<div id="install-prompt" class="hidden fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 z-50">
+  <div class="flex items-start space-x-3">
+    <div class="flex-shrink-0">
+      <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+      </svg>
+    </div>
+    <div class="flex-1 min-w-0">
+      <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+        アプリとしてインストール
+      </h3>
+      <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+        ホーム画面に追加してオフラインでも記事を読めます
+      </p>
+      <div class="flex space-x-2 mt-3">
+        <button 
+          id="install-button"
+          class="inline-flex items-center px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        >
+          インストール
+        </button>
+        <button 
+          id="dismiss-prompt"
+          class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+        >
+          後で
+        </button>
+      </div>
+    </div>
+    <button 
+      id="close-prompt"
+      class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  // PWA インストールプロンプトの管理
+  let deferredPrompt;
+  const installPrompt = document.getElementById('install-prompt');
+  const installButton = document.getElementById('install-button');
+  const dismissButton = document.getElementById('dismiss-prompt');
+  const closeButton = document.getElementById('close-prompt');
+
+  // beforeinstallprompt イベントをキャッチ
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // デフォルトのブラウザプロンプトを防ぐ
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // 以前に拒否していない場合のみ表示
+    const dismissed = localStorage.getItem('pwa-install-dismissed');
+    const installed = localStorage.getItem('pwa-installed');
+    
+    if (!dismissed && !installed) {
+      // 少し遅延してプロンプトを表示
+      setTimeout(() => {
+        installPrompt.classList.remove('hidden');
+      }, 3000);
+    }
+  });
+
+  // インストールボタンクリック
+  installButton?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    
+    // プロンプトを表示
+    deferredPrompt.prompt();
+    
+    // ユーザーの選択を待つ
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+      localStorage.setItem('pwa-installed', 'true');
+    } else {
+      console.log('User dismissed the install prompt');
+      localStorage.setItem('pwa-install-dismissed', 'true');
+    }
+    
+    // プロンプトを非表示
+    installPrompt.classList.add('hidden');
+    deferredPrompt = null;
+  });
+
+  // 後でボタンクリック
+  dismissButton?.addEventListener('click', () => {
+    installPrompt.classList.add('hidden');
+    // 24時間後に再度表示
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    localStorage.setItem('pwa-install-dismissed', tomorrow.getTime().toString());
+  });
+
+  // 閉じるボタンクリック
+  closeButton?.addEventListener('click', () => {
+    installPrompt.classList.add('hidden');
+    localStorage.setItem('pwa-install-dismissed', 'true');
+  });
+
+  // アプリがインストールされたときの処理
+  window.addEventListener('appinstalled', (evt) => {
+    console.log('PWA was installed');
+    localStorage.setItem('pwa-installed', 'true');
+    installPrompt.classList.add('hidden');
+  });
+
+  // 24時間経過チェック
+  function checkDismissedTime() {
+    const dismissed = localStorage.getItem('pwa-install-dismissed');
+    if (dismissed && dismissed !== 'true') {
+      const dismissedTime = parseInt(dismissed);
+      const now = new Date().getTime();
+      
+      // 24時間経過していれば削除
+      if (now > dismissedTime) {
+        localStorage.removeItem('pwa-install-dismissed');
+      }
+    }
+  }
+
+  // ページロード時にチェック
+  checkDismissedTime();
+</script>

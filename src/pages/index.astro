@@ -3,8 +3,10 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ArticleCard from '../components/ArticleCard.astro';
+import InstallPrompt from '../components/InstallPrompt.astro';
 import { getCollection } from 'astro:content';
 import { PAGINATION, DEFAULT_IMAGES } from '../config/constants';
+import StructuredData from '../components/StructuredData.astro';
 
 // Markdownファイルから記事を取得
 const allPosts = await getCollection('blog');
@@ -23,7 +25,13 @@ const articles = allPosts
 
 ---
 
-<Layout title="Blog - Web Development & Programming">
+<Layout title="Home - aiueueue's blog">
+  <StructuredData 
+    type="website" 
+    title="aiueueue's blog"
+    description="Web開発、プログラミング、テクノロジーに関する学びと発見を共有するブログです"
+    url={Astro.site?.toString()}
+  />
   <Header />
   
   <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -46,7 +54,7 @@ const articles = allPosts
           <div class="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-purple-600 p-1">
             <div class="w-full h-full rounded-full overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center">
               <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face"
+                src="/profile.png"
                 alt="aiueueue's profile"
                 class="w-full h-full object-cover rounded-full"
                 loading="eager"
@@ -65,8 +73,8 @@ const articles = allPosts
       </h2>
       
       <div class="space-y-4">
-        {articles.map((article) => (
-          <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200 p-4">
+        {articles.map((article, index) => (
+          <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg dark:hover:shadow-gray-900/20 transition-all duration-300 ease-out p-4 hover:translate-y-[-2px] hover:border-blue-300 dark:hover:border-blue-600/50 group">
             <ArticleCard 
               title={article.title}
               description={article.description}
@@ -75,6 +83,7 @@ const articles = allPosts
               date={article.date}
               slug={article.slug}
               compact={true}
+              eager={index === 0}
             />
           </div>
         ))}
@@ -91,4 +100,5 @@ const articles = allPosts
   </main>
   
   <Footer />
+  <InstallPrompt />
 </Layout>

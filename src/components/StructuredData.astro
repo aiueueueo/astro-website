@@ -1,0 +1,102 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  type: 'article' | 'blog' | 'website';
+  post?: CollectionEntry<'blog'>;
+  url?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const { type, post, url, title, description, image } = Astro.props;
+
+// サイト基本情報
+const SITE_NAME = "aiueueue's blog";
+const SITE_URL = Astro.site?.toString() || "https://astro-blog.pages.dev";
+const AUTHOR_NAME = "aiueueue";
+
+let structuredData: any = {};
+
+if (type === 'article' && post) {
+  // 記事用の構造化データ
+  structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.data.title,
+    "description": post.data.description,
+    "image": post.data.heroImage ? new URL(post.data.heroImage, SITE_URL).toString() : undefined,
+    "author": {
+      "@type": "Person",
+      "name": AUTHOR_NAME,
+      "url": SITE_URL
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": SITE_NAME,
+      "url": SITE_URL
+    },
+    "datePublished": post.data.pubDate.toISOString(),
+    "dateModified": post.data.updatedDate?.toISOString() || post.data.pubDate.toISOString(),
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": new URL(`/blog/${post.slug}/`, SITE_URL).toString()
+    },
+    "keywords": post.data.tags.join(', '),
+    "articleSection": "Technology",
+    "inLanguage": "ja-JP",
+    "url": new URL(`/blog/${post.slug}/`, SITE_URL).toString()
+  };
+} else if (type === 'blog') {
+  // ブログリスト用の構造化データ
+  structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": SITE_NAME,
+    "description": "Web開発、プログラミング、テクノロジーに関する学びと発見を共有するブログです",
+    "url": new URL("/blog/", SITE_URL).toString(),
+    "author": {
+      "@type": "Person",
+      "name": AUTHOR_NAME,
+      "url": SITE_URL
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": SITE_NAME,
+      "url": SITE_URL
+    },
+    "inLanguage": "ja-JP"
+  };
+} else if (type === 'website') {
+  // ウェブサイト用の構造化データ
+  structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Website",
+    "name": SITE_NAME,
+    "description": description || "Web開発、プログラミング、テクノロジーに関する学びと発見を共有するブログです",
+    "url": url || SITE_URL,
+    "author": {
+      "@type": "Person",
+      "name": AUTHOR_NAME,
+      "url": SITE_URL
+    },
+    "inLanguage": "ja-JP",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": new URL("/search?q={search_term_string}", SITE_URL).toString()
+      },
+      "query-input": "required name=search_term_string"
+    }
+  };
+}
+
+// 不要なundefinedプロパティを除去
+const cleanStructuredData = JSON.parse(JSON.stringify(structuredData, (key, value) => 
+  value === undefined ? undefined : value
+));
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(cleanStructuredData)} />

@@ -8,6 +8,7 @@ import Breadcrumb from '../../../components/Breadcrumb.astro';
 import { getCollection } from 'astro:content';
 import { getPublishedPosts, sortPostsByDate, transformBlogPost, paginatePosts, calculateTotalPages } from '../../../utils/blog';
 import { PAGINATION } from '../../../config/constants';
+import StructuredData from '../../../components/StructuredData.astro';
 
 export async function getStaticPaths() {
   const allPosts = await getCollection('blog');
@@ -33,6 +34,7 @@ const blogArticles = paginatedPosts.map(transformBlogPost);
 ---
 
 <Layout title={`Blog - ページ ${page}`} description="Web開発とプログラミングに関する記事一覧">
+  <StructuredData type="blog" />
   <Header currentPage="blog" />
   
   <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -54,8 +56,8 @@ const blogArticles = paginatedPosts.map(transformBlogPost);
 
     <!-- Blog Grid -->
     <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-12">
-      {blogArticles.map((article) => (
-        <ArticleCard {...article} compact={false} />
+      {blogArticles.map((article, index) => (
+        <ArticleCard {...article} compact={false} eager={index < 3} />
       ))}
     </div>
 
