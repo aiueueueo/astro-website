@@ -1,0 +1,173 @@
+---
+title: "ブログカード機能の使用例"
+description: "Zennスタイルのブログカードコンポーネントの使い方と実例を紹介。外部サイトや内部記事を美しいカード形式で表示する方法を解説します。"
+pubDate: 2024-01-25
+heroImage: "/images/sample.png"
+tags: ["Astro", "コンポーネント", "UI", "ブログ"]
+draft: false
+---
+
+import BlogCard from '../../components/BlogCard.astro';
+import BlogCardSimple from '../../components/BlogCardSimple.astro';
+
+# ブログカード機能の使用例
+
+Zennの記事を参考にした、新しいブログカードコンポーネントの使用方法を紹介します。
+
+## 基本的なブログカード
+
+### 事前定義済みサイトの表示
+
+人気サイトのメタデータは事前に定義されているため、URLを指定するだけで美しく表示されます。
+
+<BlogCard href="https://astro.build/" />
+
+<BlogCard href="https://react.dev/" />
+
+<BlogCard href="https://nextjs.org/" />
+
+### TypeScriptの公式サイト
+
+<BlogCard href="https://www.typescriptlang.org/" />
+
+## シンプルなブログカード
+
+より軽量な表示が必要な場合は、シンプルバージョンを使用できます。
+
+<BlogCardSimple href="https://web.dev/" />
+
+<BlogCardSimple href="https://github.com/" />
+
+## カスタムメタデータでの表示
+
+独自のタイトルや説明文を指定することも可能です。
+
+<BlogCardSimple 
+  href="https://developer.mozilla.org/"
+  title="MDN Web Docs"
+  description="Web技術の包括的なドキュメント。HTML、CSS、JavaScriptのリファレンスとチュートリアル。"
+/>
+
+## 内部リンクでの使用
+
+ブログ内の他の記事への参照にも使用できます。
+
+<BlogCardSimple 
+  href="/blog/astro-blog-image-sample/"
+  title="Astroブログでの画像表示サンプル"
+  description="画像を効果的に表示する方法とベストプラクティス"
+/>
+
+<BlogCardSimple 
+  href="/blog/modern-web-development-2024/"
+  title="2024年のモダンWeb開発トレンド"
+  description="最新のWeb開発トレンドとツールを徹底解説"
+/>
+
+## 実装の特徴
+
+### 1. メタデータの自動取得
+事前定義されたサイトのメタデータを自動で表示し、美しいカードを生成します。
+
+### 2. レスポンシブデザイン
+モバイルからデスクトップまで、あらゆるデバイスで最適な表示を提供。
+
+### 3. ダークモード対応
+サイトのテーマに自動で追従し、統一感のあるデザインを維持。
+
+### 4. アクセシビリティ
+- 適切なARIA属性
+- キーボードナビゲーション対応
+- スクリーンリーダー対応
+
+## 技術的な詳細
+
+### 使用可能なコンポーネント
+
+#### BlogCard（詳細版）
+```astro
+<BlogCard href="https://example.com/" />
+```
+
+#### BlogCardSimple（シンプル版）
+```astro
+<BlogCardSimple 
+  href="https://example.com/"
+  title="カスタムタイトル"
+  description="カスタム説明文"
+/>
+```
+
+### プロパティ一覧
+
+#### BlogCard
+- `href`: リンク先URL（必須）
+- `metadata`: カスタムメタデータ（オプション）
+
+#### BlogCardSimple
+- `href`: リンク先URL（必須）
+- `title`: カスタムタイトル（オプション）
+- `description`: カスタム説明文（オプション）
+- `metadata`: カスタムメタデータ（オプション）
+
+## パフォーマンスの考慮
+
+### 事前定義済みメタデータ
+主要なサイトのメタデータは事前に定義されているため、高速な表示が可能です。
+
+### 画像の遅延読み込み
+カード内の画像は`loading="lazy"`により、必要な時のみ読み込まれます。
+
+### フォールバック処理
+メタデータが取得できない場合でも、適切なフォールバック表示を提供します。
+
+## 複数カードの組み合わせ
+
+関連リソースをまとめて紹介する際に便利です。
+
+<BlogCardSimple href="https://astro.build/" />
+<BlogCardSimple href="https://react.dev/" />
+<BlogCardSimple href="https://www.typescriptlang.org/" />
+
+## まとめ
+
+このブログカード機能により：
+
+1. **視覚的魅力**: リンクが美しいカード形式で表示
+2. **情報の事前確認**: クリック前にサイトの内容を把握
+3. **統一感**: サイト全体で一貫したデザイン
+4. **レスポンシブ**: あらゆるデバイスで最適表示
+
+読者にとってより親しみやすく、使いやすいブログ体験を提供できます。
+
+## ソーシャルメディア連携
+
+ブログカードと組み合わせて、ツイートの埋め込みも可能です。
+
+<blockquote class="twitter-tweet"><p lang="ja" dir="ltr">わかる<br />&gt;「技術以外の本」を読む習慣をつける： 技術書だけでなく、デザイン、心理学、ビジネス、哲学など様々な分野の本を読むことで、多角的な思考が育まれます。これらの知識は、技術的な問題に対しても新たな視点をもたらすことがあります。<a href="https://t.co/QafKAsecrr">https://t.co/QafKAsecrr</a></p>&mdash; azukiazusa (@azukiazusa9) <a href="https://twitter.com/azukiazusa9/status/1929362200281358686?ref_src=twsrc%5Etfw">June 2, 2025</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+---
+
+## 関連記事
+
+<BlogCardSimple 
+  href="/blog/link-card-sample/"
+  title="旧リンクカード表示のサンプル"
+  description="以前のLinkCardコンポーネントの実装例"
+/>
+
+<BlogCardSimple 
+  href="/blog/react-performance-optimization/"
+  title="React パフォーマンス最適化の実践ガイド"
+  description="Reactアプリケーションの最適化テクニック"
+/>
+
+## 参考リンク
+
+<BlogCard href="https://zenn.dev/tomi/articles/2021-03-22-blog-card" />
+
+<BlogCardSimple 
+  href="https://astro.build/blog/"
+  title="Astro Blog"
+  description="Astroの公式ブログで最新情報をチェック"
+/>

@@ -43,7 +43,7 @@ const blogArticles = paginatedPosts.map(transformBlogPost);
     <!-- Blog Grid -->
     <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-12">
       {blogArticles.map((article, index) => (
-        <ArticleCard {...article} compact={false} eager={index < 3} />
+        <ArticleCard {...article} compact={false} eager={index < 3} fromPage={1} />
       ))}
     </div>
 
