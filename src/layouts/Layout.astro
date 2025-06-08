@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ViewTransitions } from 'astro:transitions';
 
 export interface Props {
 	title: string;
@@ -23,6 +24,83 @@ const socialImage = image ? new URL(image, Astro.site) : new URL('/og-image.jpg'
 		<link rel="canonical" href={canonicalURL} />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		
+		<!-- Prevent flash of wrong theme -->
+		<script>
+			// This must run before any other content loads
+			const stored = localStorage.getItem('theme');
+			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			const isDark = stored === 'dark' || (!stored && prefersDark);
+			
+			if (isDark) {
+				document.documentElement.classList.add('dark');
+				document.documentElement.style.backgroundColor = '#111827';
+				document.documentElement.style.colorScheme = 'dark';
+			} else {
+				document.documentElement.classList.remove('dark');
+				document.documentElement.style.backgroundColor = '#f3f4f6';
+				document.documentElement.style.colorScheme = 'light';
+			}
+			
+			// Persist theme during navigation
+			document.addEventListener('astro:before-swap', function(event) {
+				const currentIsDark = document.documentElement.classList.contains('dark');
+				const bgColor = currentIsDark ? '#111827' : '#f3f4f6';
+				
+				// Force background color immediately
+				document.documentElement.style.backgroundColor = bgColor;
+				document.body.style.backgroundColor = bgColor;
+				
+				// Apply to new document as well
+				if (event.newDocument) {
+					event.newDocument.documentElement.style.backgroundColor = bgColor;
+					if (event.newDocument.body) {
+						event.newDocument.body.style.backgroundColor = bgColor;
+					}
+				}
+			});
+			
+			// Ensure background persists after swap
+			document.addEventListener('astro:after-swap', function() {
+				const stored = localStorage.getItem('theme');
+				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				const isDark = stored === 'dark' || (!stored && prefersDark);
+				const bgColor = isDark ? '#111827' : '#f3f4f6';
+				
+				if (isDark) {
+					document.documentElement.classList.add('dark');
+				} else {
+					document.documentElement.classList.remove('dark');
+				}
+				
+				document.documentElement.style.backgroundColor = bgColor;
+				document.body.style.backgroundColor = bgColor;
+			});
+		</script>
+		
+		<style>
+			html {
+				transition: none !important;
+			}
+			html.dark {
+				background-color: #111827 !important;
+				color-scheme: dark;
+			}
+			html:not(.dark) {
+				background-color: #f3f4f6 !important;
+				color-scheme: light;
+			}
+			/* Prevent flash during navigation */
+			html, body {
+				background-color: inherit !important;
+			}
+			html.dark, html.dark body {
+				background-color: #111827 !important;
+			}
+			html:not(.dark), html:not(.dark) body {
+				background-color: #f3f4f6 !important;
+			}
+		</style>
 		
 		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content={article ? "article" : "website"} />
@@ -53,8 +131,11 @@ const socialImage = image ? new URL(image, Astro.site) : new URL('/og-image.jpg'
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 		<meta name="apple-mobile-web-app-title" content="Tech Blog" />
+		
+		<!-- View Transitions -->
+		<ViewTransitions fallback="none" />
 	</head>
-	<body>
+	<body class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
 		<slot />
 		<script>
 			// Service Worker Registration
@@ -69,16 +150,6 @@ const socialImage = image ? new URL(image, Astro.site) : new URL('/og-image.jpg'
 						});
 				});
 			}
-		</script>
-		<script>
-			// Initialize theme immediately to prevent flash
-			(function() {
-				const stored = localStorage.getItem('theme');
-				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-				if (stored === 'dark' || (!stored && prefersDark)) {
-					document.documentElement.classList.add('dark');
-				}
-			})();
 		</script>
 	</body>
 </html>

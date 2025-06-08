@@ -12,7 +12,6 @@ const { currentPage = '' } = Astro.props;
 
 // Generate navigation link classes
 const blogLinkClasses = getNavLinkClasses(currentPage, 'blog');
-const aboutLinkClasses = getNavLinkClasses(currentPage, 'about');
 const tagsLinkClasses = getNavLinkClasses(currentPage, 'tags');
 
 // Generate home link classes
@@ -41,9 +40,6 @@ const homeLinkClasses = currentPage === 'home' || currentPage === ''
       <nav class="hidden md:flex items-center space-x-6 flex-1 justify-center">
         <a href="/blog" class={blogLinkClasses}>
           Blog
-        </a>
-        <a href="/about" class={aboutLinkClasses}>
-          About
         </a>
         <a href="/tags" class={tagsLinkClasses}>
           Tags
