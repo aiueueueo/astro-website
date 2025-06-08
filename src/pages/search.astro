@@ -106,12 +106,17 @@ const articles = publishedPosts.map(post => ({
 
 <!-- Search Data -->
 <script define:vars={{ articles }}>
-  document.addEventListener('DOMContentLoaded', function() {
+  function initSearchPage() {
     const searchInput = document.getElementById('search-input');
     const searchResults = document.getElementById('search-results');
     const noResults = document.getElementById('no-results');
     const searchStats = document.getElementById('search-stats');
     const clearButton = document.getElementById('clear-search');
+    
+    // 要素が存在しない場合は早期リターン
+    if (!searchInput || !searchResults || !noResults || !searchStats || !clearButton) {
+      return;
+    }
     
     // URLパラメータから検索クエリを取得
     const urlParams = new URLSearchParams(window.location.search);
@@ -229,8 +234,8 @@ const articles = publishedPosts.map(post => ({
       searchStats.textContent = `全 ${articles.length} 件の記事`;
     }
     
-    // イベントリスナー
-    searchInput.addEventListener('input', (e) => {
+    // 既存のイベントリスナーを削除して新しく追加
+    const inputHandler = (e) => {
       const query = e.target.value;
       performSearch(query);
       
@@ -239,14 +244,26 @@ const articles = publishedPosts.map(post => ({
         ? `${window.location.pathname}?q=${encodeURIComponent(query)}`
         : window.location.pathname;
       window.history.replaceState({}, '', newUrl);
-    });
+    };
     
-    clearButton.addEventListener('click', () => {
+    const clearHandler = () => {
       searchInput.value = '';
       showAllArticles();
       window.history.replaceState({}, '', window.location.pathname);
-    });
-  });
+    };
+    
+    // 既存のリスナーを削除
+    searchInput.removeEventListener('input', inputHandler);
+    clearButton.removeEventListener('click', clearHandler);
+    
+    // 新しいリスナーを追加
+    searchInput.addEventListener('input', inputHandler);
+    clearButton.addEventListener('click', clearHandler);
+  }
+
+  // 初期化を複数のイベントで実行
+  document.addEventListener('DOMContentLoaded', initSearchPage);
+  document.addEventListener('astro:page-load', initSearchPage);
 </script>
 
 <style>
