@@ -2,6 +2,7 @@
 import MobileMenu from './MobileMenu.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import SearchBox from './SearchBox.astro';
+import SocialLinks from './SocialLinks.astro';
 import { getNavLinkClasses } from '../lib/utils/classNames';
 
 export interface Props {
@@ -46,10 +47,11 @@ const homeLinkClasses = currentPage === 'home' || currentPage === ''
         </a>
       </nav>
       
-      <!-- Right: Search & Theme Toggle -->
+      <!-- Right: Search, Theme Toggle & Social Links -->
       <div class="flex items-center space-x-3 flex-1 justify-end">
         <SearchBox />
         <ThemeToggle />
+        <SocialLinks />
       </div>
     </div>
   </div>
