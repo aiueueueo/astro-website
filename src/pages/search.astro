@@ -4,24 +4,11 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
-import { getCollection } from 'astro:content';
+import { getPublishedPosts, transformToSearchArticle } from '../services/blogService';
 import '../styles/global.css';
 
-// 全ての公開記事を取得
-const allPosts = await getCollection('blog');
-const publishedPosts = allPosts
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-const articles = publishedPosts.map(post => ({
-  title: post.data.title,
-  description: post.data.description,
-  image: post.data.heroImage || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop",
-  tags: post.data.tags,
-  date: post.data.pubDate.toISOString().split('T')[0],
-  slug: post.slug,
-  content: post.body // 検索用のコンテンツ
-}));
+const publishedPosts = await getPublishedPosts();
+const articles = publishedPosts.map(transformToSearchArticle);
 ---
 
 <Layout title="Search - aiueueue's blog" description="ブログ記事を検索">

@@ -2,19 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { getCollection } from 'astro:content';
+import { getRecentPosts } from '../services/blogService';
 
-// 最新記事を3つ取得
-const allPosts = await getCollection('blog');
-const recentPosts = allPosts
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3)
-  .map(post => ({
-    title: post.data.title,
-    slug: post.slug,
-    description: post.data.description
-  }));
+const recentPosts = await getRecentPosts(3);
+const articles = recentPosts.map(post => ({
+  title: post.data.title,
+  slug: post.slug,
+  description: post.data.description
+}));
 ---
 
 <Layout title="404 - aiueueue's blog" description="お探しのページは見つかりませんでした。">
@@ -87,7 +82,7 @@ const recentPosts = allPosts
         </h3>
         
         <div class="space-y-4">
-          {recentPosts.map((post) => (
+          {articles.map((post) => (
             <a 
               href={`/blog/${post.slug}/`}
               class="block p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md dark:hover:shadow-gray-900/20 transition-all duration-200 text-left group"

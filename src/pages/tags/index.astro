@@ -3,25 +3,10 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
-import { getCollection } from 'astro:content';
+import { getAllTags } from '../../services/blogService';
 import '../../styles/global.css';
 
-// 全ての記事からタグを収集
-const allPosts = await getCollection('blog');
-const publishedPosts = allPosts.filter(post => !post.data.draft);
-
-// タグの使用回数を計算
-const tagCounts = new Map<string, number>();
-publishedPosts.forEach(post => {
-  post.data.tags.forEach(tag => {
-    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
-  });
-});
-
-// タグを使用回数順でソート
-const sortedTags = Array.from(tagCounts.entries())
-  .sort((a, b) => b[1] - a[1])
-  .map(([tag, count]) => ({ tag, count }));
+const sortedTags = await getAllTags();
 
 // タグごとの色を生成（ハッシュベース）
 function getTagColor(tag: string) {

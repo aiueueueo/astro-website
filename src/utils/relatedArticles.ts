@@ -139,9 +139,7 @@ function calculateTagScore(
 function calculateTagFrequency(posts: CollectionEntry<'blog'>[]): Record<string, number> {
   const frequency: Record<string, number> = {};
   
-  posts
-    .filter(post => !post.data.draft)
-    .forEach(post => {
+  posts.forEach(post => {
       post.data.tags.forEach(tag => {
         frequency[tag] = (frequency[tag] || 0) + 1;
       });

@@ -5,19 +5,17 @@ import Footer from '../../components/Footer.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
 import Pagination from '../../components/Pagination.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
-import { getCollection } from 'astro:content';
-import { getPublishedPosts, sortPostsByDate, transformBlogPost, paginatePosts, calculateTotalPages } from '../../utils/blog';
+import { getPublishedPosts as getPublishedPostsFromService, transformToArticleData } from '../../services/blogService';
+import { paginatePosts, calculateTotalPages } from '../../utils/blog';
 import { PAGINATION } from '../../config/constants';
 import StructuredData from '../../components/StructuredData.astro';
 
-// 記事データを取得・処理
-const allPosts = await getCollection('blog');
-const publishedPosts = sortPostsByDate(getPublishedPosts(allPosts));
+const publishedPosts = await getPublishedPostsFromService();
 
 const totalPages = calculateTotalPages(publishedPosts.length, PAGINATION.POSTS_PER_PAGE);
 const paginatedPosts = paginatePosts(publishedPosts, 1, PAGINATION.POSTS_PER_PAGE);
 
-const blogArticles = paginatedPosts.map(transformBlogPost);
+const blogArticles = paginatedPosts.map(transformToArticleData);
 ---
 
 <Layout title="Blog - aiueueue's blog" description="Web開発とプログラミングに関する全ての記事">
