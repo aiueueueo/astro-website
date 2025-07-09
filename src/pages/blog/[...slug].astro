@@ -5,6 +5,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
+import MobileTableOfContents from '../../components/MobileTableOfContents.astro';
 import SocialShare from '../../components/SocialShare.astro';
 import StructuredData from '../../components/StructuredData.astro';
 import '../../styles/global.css';
@@ -119,7 +120,10 @@ function formatDate(date: Date) {
         </div>
       </article>
       
-      <!-- Table of Contents -->
+      <!-- Mobile Table of Contents -->
+      <MobileTableOfContents headings={headings} />
+      
+      <!-- Desktop Table of Contents -->
       <TableOfContents headings={headings} />
     </div>
 

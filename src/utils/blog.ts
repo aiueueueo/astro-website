@@ -71,3 +71,15 @@ export function calculateTotalPages(totalItems: number, itemsPerPage: number): n
   return Math.ceil(totalItems / itemsPerPage);
 }
 
+/**
+ * 記事コンテンツから関連記事コンポーネントの出力を除外
+ */
+export function cleanContentForSearch(content: string): string {
+  return content
+    .replace(/<RelatedArticles[\s\S]*?<\/RelatedArticles>/gi, '')
+    .replace(/関連記事[\s\S]*?(?=\n\n|\n#|$)/gi, '')
+    .replace(/## 関連記事[\s\S]*?(?=\n\n|\n#|$)/gi, '')
+    .replace(/### 関連記事[\s\S]*?(?=\n\n|\n#|$)/gi, '')
+    .trim();
+}
+
