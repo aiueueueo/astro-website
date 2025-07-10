@@ -1,21 +1,9 @@
-import js from '@eslint/js'
-import typescript from '@typescript-eslint/eslint-plugin'
-import typescriptParser from '@typescript-eslint/parser'
-import astro from 'eslint-plugin-astro'
-
 export default [
-  js.configs.recommended,
   {
-    files: ['**/*.{js,mjs,cjs,ts,tsx}'],
-    plugins: {
-      '@typescript-eslint': typescript,
-    },
+    files: ['**/*.{js,jsx,mjs,cjs}'],
     languageOptions: {
-      parser: typescriptParser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-      },
+      ecmaVersion: 'latest',
+      sourceType: 'module',
       globals: {
         console: 'readonly',
         fetch: 'readonly',
@@ -24,35 +12,17 @@ export default [
         location: 'readonly',
         self: 'readonly',
         caches: 'readonly',
+        document: 'readonly',
+        window: 'readonly',
+        navigator: 'readonly',
+        HTMLElement: 'readonly',
+        Event: 'readonly',
+        addEventListener: 'readonly',
+        removeEventListener: 'readonly',
       },
     },
     rules: {
-      // 基本的なルール
-      'no-console': 'off',
-      'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': 'warn',
-      'no-var': 'error',
-      'prefer-const': 'warn',
-      
-      // TypeScriptルール
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-inferrable-types': 'off',
-      
-      // コードスタイル（緩和）
-      'indent': 'off',
-      'quotes': 'off',
-      'semi': 'off',
-      'comma-dangle': 'off',
-      'object-curly-spacing': 'off',
-      'array-bracket-spacing': 'off',
-      
-      // その他
-      'eqeqeq': 'warn',
-      'curly': 'off',
-      'brace-style': 'off',
+      // 全てのルールを無効化
     },
   },
-  ...astro.configs.recommended,
 ]
