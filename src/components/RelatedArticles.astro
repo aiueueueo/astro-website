@@ -43,9 +43,9 @@ const relatedArticles = relatedPosts.map(post => ({
       </p>
     </div>
     
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div class="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
       {relatedArticles.map((article, index) => (
-        <div class="relative group">
+        <div class="relative group related-article-card">
           <!-- 関連度インジケーター -->
           {relatedPosts[index].commonTags > 0 && (
             <div class="absolute top-2 right-2 z-10">
@@ -153,6 +153,41 @@ const relatedArticles = relatedPosts.map(post => ({
   .group:hover .absolute > div {
     transform: scale(1.05);
     transition: transform 0.2s ease-out;
+  }
+  
+  /* モバイルでの関連記事カードのコンパクト表示 */
+  @media (max-width: 767px) {
+    .related-article-card {
+      transform: scale(0.8) !important;
+      transform-origin: top !important;
+      margin-bottom: 1rem !important;
+    }
+    .related-article-card img {
+      aspect-ratio: 16/9 !important;
+      height: auto !important;
+      max-height: 120px !important;
+    }
+    .related-article-card h2 {
+      font-size: 0.875rem !important;
+      line-height: 1.25rem !important;
+      margin-bottom: 0.5rem !important;
+    }
+    .related-article-card p {
+      font-size: 0.75rem !important;
+      line-height: 1rem !important;
+      margin-bottom: 0.5rem !important;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
+    }
+    .related-article-card time {
+      font-size: 0.7rem !important;
+    }
+    .related-article-card a[href*="/tags/"] {
+      font-size: 0.65rem !important;
+      padding: 0.125rem 0.375rem !important;
+    }
   }
   
   /* 詳細の開閉アニメーション */
