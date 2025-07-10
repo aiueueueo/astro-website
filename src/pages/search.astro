@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import { getCollection } from 'astro:content';
+import { cleanContentForSearch } from '../utils/blog';
 import '../styles/global.css';
 
 // 全ての公開記事を取得
@@ -20,7 +21,7 @@ const articles = publishedPosts.map(post => ({
   tags: post.data.tags,
   date: post.data.pubDate.toISOString().split('T')[0],
   slug: post.slug,
-  content: post.body // 検索用のコンテンツ
+  content: cleanContentForSearch(post.body) // 関連記事情報を除外した検索用コンテンツ
 }));
 ---
 
@@ -64,7 +65,7 @@ const articles = publishedPosts.map(post => ({
     </div>
 
     <!-- Search Results -->
-    <div id="search-results" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+    <div id="search-results" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
       {articles.map((article, index) => (
         <ArticleCard 
           title={article.title}
@@ -180,9 +181,7 @@ const articles = publishedPosts.map(post => ({
                 class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500 ease-out"
                 loading="lazy"
               />
-              <!-- ホバー時のオーバーレイ -->
               <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <!-- 読む アイコン -->
               <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                 <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
                   <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
