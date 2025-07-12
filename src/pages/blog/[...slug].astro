@@ -96,7 +96,7 @@ function formatDate(date: Date) {
         
         <!-- Tags -->
         {post.data.tags.length > 0 && (
-          <div class="flex flex-wrap justify-start gap-2">
+          <div class="flex flex-wrap justify-start gap-2 mb-6">
             {post.data.tags.map((tag) => (
               <a 
                 href={`/tags/${tag.toLowerCase().replace(/\s+/g, '-')}/`}
@@ -107,6 +107,11 @@ function formatDate(date: Date) {
             ))}
           </div>
         )}
+        
+        <!-- Mobile Table of Contents - Only show on mobile -->
+        <div class="md:hidden">
+          <MobileTableOfContents headings={headings} />
+        </div>
       </header>
       </div>
     </div>
@@ -120,11 +125,10 @@ function formatDate(date: Date) {
         </div>
       </article>
       
-      <!-- Mobile Table of Contents -->
-      <MobileTableOfContents headings={headings} />
-      
-      <!-- Desktop Table of Contents -->
-      <TableOfContents headings={headings} />
+      <!-- Desktop Table of Contents - Only show on desktop -->
+      <div class="hidden lg:block">
+        <TableOfContents headings={headings} />
+      </div>
     </div>
 
     <!-- Social Share Section -->

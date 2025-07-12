@@ -12,7 +12,7 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 ---
 
 {filteredHeadings.length > 0 && (
-  <div class="lg:hidden mb-6">
+  <div class="mb-6">
     <details class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
       <summary class="p-4 cursor-pointer font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
         目次 ({filteredHeadings.length}項目)
