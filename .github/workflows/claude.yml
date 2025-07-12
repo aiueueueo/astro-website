@@ -46,7 +46,7 @@ jobs:
       - name: Post Claude response to GitHub
         run: |
           # Extract Claude response from log file
-          CLAUDE_RESPONSE=$(cat /home/runner/work/_temp/claude-execution-output.json | jq -r '.result // empty')
+          CLAUDE_RESPONSE=$(cat /home/runner/work/_temp/claude-execution-output.json | jq -r 'select(.type == "result") | .result // empty')
           
           if [ -n "$CLAUDE_RESPONSE" ] && [ "$CLAUDE_RESPONSE" != "null" ]; then
             if [ "${{ github.event_name }}" = "issues" ]; then
