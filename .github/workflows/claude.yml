@@ -44,12 +44,19 @@ jobs:
           prompt: ${{ github.event.issue.body || github.event.comment.body || github.event.review.body }}
       
       - name: Post Claude response to GitHub
-        if: steps.claude.outputs.response
         run: |
-          if [ "${{ github.event_name }}" = "issues" ]; then
-            gh issue comment ${{ github.event.issue.number }} --body "${{ steps.claude.outputs.response }}"
-          elif [ "${{ github.event_name }}" = "issue_comment" ]; then
-            gh issue comment ${{ github.event.issue.number }} --body "${{ steps.claude.outputs.response }}"
+          # Extract Claude response from log file
+          CLAUDE_RESPONSE=$(cat /home/runner/work/_temp/claude-execution-output.json | jq -r '.result // empty')
+          
+          if [ -n "$CLAUDE_RESPONSE" ] && [ "$CLAUDE_RESPONSE" != "null" ]; then
+            if [ "${{ github.event_name }}" = "issues" ]; then
+              gh issue comment ${{ github.event.issue.number }} --body "$CLAUDE_RESPONSE"
+            elif [ "${{ github.event_name }}" = "issue_comment" ]; then
+              gh issue comment ${{ github.event.issue.number }} --body "$CLAUDE_RESPONSE"
+            fi
+            echo "Posted Claude response: $CLAUDE_RESPONSE"
+          else
+            echo "No Claude response found"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
