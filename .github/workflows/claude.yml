@@ -33,6 +33,7 @@ jobs:
           fetch-depth: 1
       
       - name: Run Claude Code
+        id: claude
         uses: grll/claude-code-base-action@main
         with:
           use_oauth: 'true'
@@ -41,3 +42,14 @@ jobs:
           claude_expires_at: ${{ secrets.CLAUDE_EXPIRES_AT }}
           timeout_minutes: "30"
           prompt: ${{ github.event.issue.body || github.event.comment.body || github.event.review.body }}
+      
+      - name: Post Claude response to GitHub
+        if: steps.claude.outputs.response
+        run: |
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            gh issue comment ${{ github.event.issue.number }} --body "${{ steps.claude.outputs.response }}"
+          elif [ "${{ github.event_name }}" = "issue_comment" ]; then
+            gh issue comment ${{ github.event.issue.number }} --body "${{ steps.claude.outputs.response }}"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
