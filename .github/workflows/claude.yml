@@ -45,10 +45,10 @@ jobs:
       
       - name: Post Claude response to GitHub
         run: |
-          # Extract Claude response from log file using grep and tail
-          CLAUDE_RESPONSE=$(grep -o '"result":"[^"]*"' /home/runner/work/_temp/claude-execution-output.json | tail -1 | cut -d'"' -f4)
+          # Extract Claude response from log file using jq with array parsing
+          CLAUDE_RESPONSE=$(cat /home/runner/work/_temp/claude-execution-output.json | jq -r '.[] | select(.type == "result") | .result')
           
-          if [ -n "$CLAUDE_RESPONSE" ]; then
+          if [ -n "$CLAUDE_RESPONSE" ] && [ "$CLAUDE_RESPONSE" != "null" ]; then
             if [ "${{ github.event_name }}" = "issues" ]; then
               gh issue comment ${{ github.event.issue.number }} --body "$CLAUDE_RESPONSE"
             elif [ "${{ github.event_name }}" = "issue_comment" ]; then
@@ -57,8 +57,6 @@ jobs:
             echo "Posted Claude response: $CLAUDE_RESPONSE"
           else
             echo "No Claude response found"
-            echo "Log file content:"
-            cat /home/runner/work/_temp/claude-execution-output.json
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
