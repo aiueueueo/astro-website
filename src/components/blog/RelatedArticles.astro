@@ -46,7 +46,7 @@ const relatedArticles = relatedPosts.map(post => transformBlogPost({
 } as CollectionEntry<'blog'>));
 
 // 関連度の高い記事があるかチェック
-const hasHighRelevance = relatedPosts.some(post => post.commonTags > 0);
+const hasHighRelevance = relatedPosts.some(post => post.score > 0);
 ---
 
 {relatedArticles.length > 0 && (
@@ -72,14 +72,14 @@ const hasHighRelevance = relatedPosts.some(post => post.commonTags > 0);
       {relatedArticles.map((article, index) => (
         <div class="relative group related-article-card">
           <!-- 関連度インジケーター -->
-          {relatedPosts[index].commonTags > 0 && (
+          {relatedPosts[index].score > 0 && (
             <div class="absolute top-2 right-2 z-10">
               <div class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 713 12V7a4 4 0 014-4z"></path>
                 </svg>
-                <span aria-label={`共通タグ数: ${relatedPosts[index].commonTags}`}>
-                  {relatedPosts[index].commonTags}
+                <span aria-label={`共通タグ数: ${relatedPosts[index].score}`}>
+                  {relatedPosts[index].score}
                 </span>
               </div>
             </div>
