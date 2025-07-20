@@ -1,0 +1,48 @@
+---
+import type { TagProps } from '../../types';
+import { getTagClasses } from '../../lib/utils';
+
+interface Props extends Omit<TagProps, 'class'> {
+  class?: string;
+}
+
+const {
+  tag,
+  href,
+  variant = 'default',
+  size = 'md',
+  interactive = false,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const tagClasses = getTagClasses(tag, variant, size, interactive || !!href);
+const finalClasses = className ? `${tagClasses} ${className}` : tagClasses;
+
+// リンクとして動作するかどうか
+const isLink = !!href;
+const Component = isLink ? 'a' : 'span';
+---
+
+<Component
+  class={finalClasses}
+  href={isLink ? href : undefined}
+  id={id}
+  {...rest}
+>
+  {tag}
+</Component>
+
+<style>
+  /* ホバー効果をリンクタグにのみ適用 */
+  a:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* ダークモード対応 */
+  :global(.dark) a:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+</style>

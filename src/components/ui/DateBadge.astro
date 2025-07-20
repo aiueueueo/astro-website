@@ -1,0 +1,62 @@
+---
+import type { DateBadgeProps } from '../../types';
+import { getDateBadgeClasses } from '../../lib/utils';
+import { formatDate, formatShortDate, formatISODate } from '../../lib/utils';
+import CalendarIcon from '../icons/CalendarIcon.astro';
+
+interface Props extends Omit<DateBadgeProps, 'class'> {
+  class?: string;
+}
+
+const {
+  date,
+  format = 'short',
+  showIcon = true,
+  variant = 'default',
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+// 日付オブジェクトに変換
+const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+// フォーマットに応じて日付文字列を生成
+let formattedDate: string;
+switch (format) {
+  case 'long':
+    formattedDate = formatDate(dateObj);
+    break;
+  case 'iso':
+    formattedDate = formatISODate(dateObj);
+    break;
+  case 'short':
+  default:
+    formattedDate = formatShortDate(dateObj);
+    break;
+}
+
+const badgeClasses = getDateBadgeClasses(variant);
+const finalClasses = className ? `${badgeClasses} ${className}` : badgeClasses;
+---
+
+<div
+  class={finalClasses}
+  id={id}
+  {...rest}
+>
+  {showIcon && (
+    <CalendarIcon class="w-4 h-4 mr-1.5 flex-shrink-0" />
+  )}
+  <time datetime={formatISODate(dateObj)}>
+    {formattedDate}
+  </time>
+</div>
+
+<style>
+  /* アクセシビリティ: スクリーンリーダー用の日付フォーマット */
+  time[datetime] {
+    /* 日付の視覚的表示を改善 */
+    white-space: nowrap;
+  }
+</style>
