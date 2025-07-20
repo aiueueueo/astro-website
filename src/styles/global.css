@@ -52,68 +52,30 @@
 }
 
 /* View Transitions: prevent white flash */
+::view-transition,
 ::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 0ms !important;
-  animation-name: none !important;
-  mix-blend-mode: normal;
-  background-color: inherit !important;
-}
-
-::view-transition-group(root) {
-  animation-duration: 0ms !important;
-  animation-name: none !important;
-}
-
+::view-transition-new(root),
+::view-transition-group(root),
 ::view-transition-image-pair(root) {
   animation-duration: 0ms !important;
   animation-name: none !important;
 }
 
-/* Force immediate transition */
-::view-transition {
-  animation-duration: 0ms !important;
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+  background-color: inherit !important;
 }
 
-/* Ensure background colors are preserved during transitions */
-@media (prefers-color-scheme: dark) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    background-color: #111827 !important;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    background-color: #f3f4f6 !important;
-  }
-}
-
-/* Manual theme overrides */
+/* Theme-specific background colors */
+html.dark,
 html.dark ::view-transition-old(root),
-html.dark ::view-transition-new(root),
-[data-theme="dark"] ::view-transition-old(root),
-[data-theme="dark"] ::view-transition-new(root) {
+html.dark ::view-transition-new(root) {
   background-color: #111827 !important;
 }
 
+html:not(.dark),
 html:not(.dark) ::view-transition-old(root),
-html:not(.dark) ::view-transition-new(root),
-[data-theme="light"] ::view-transition-old(root),
-[data-theme="light"] ::view-transition-new(root) {
-  background-color: #f3f4f6 !important;
-}
-
-/* Additional safeguards */
-html {
-  @apply bg-gray-100 dark:bg-gray-900;
-}
-
-html.dark {
-  background-color: #111827 !important;
-}
-
-html:not(.dark) {
+html:not(.dark) ::view-transition-new(root) {
   background-color: #f3f4f6 !important;
 }

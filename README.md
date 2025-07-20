@@ -50,6 +50,24 @@
 - **[Cloudflare Pages](https://pages.cloudflare.com/)** - 高速配信とデプロイ
 - **GitHub Actions** - CI/CD自動化
 
+## 🎯 最近の改善点（DRY/YAGNIリファクタリング）
+
+### コード品質の向上
+- **重複コードの除去**: 約1200行のコードを削減
+- **コンポーネント整理**: 機能別にディレクトリを再構成（layout/blog/ui）
+- **型安全性の強化**: TypeScriptの厳格な型チェックに対応
+- **設定の一元管理**: lib/constants配下で全設定を統合管理
+
+### パフォーマンス最適化
+- **未使用コードの削除**: 使用されていないコンポーネントとユーティリティを除去
+- **インポートパスの最適化**: 依存関係の整理と最適化
+- **CSSの最小化**: 重複したスタイル定義を統合
+
+### 保守性の向上
+- **明確なディレクトリ構造**: 機能ごとにコンポーネントを整理
+- **再利用可能なUIコンポーネント**: Tag、DateBadge、Buttonコンポーネントの統一
+- **統一された型定義**: types/配下で全ての型を管理
+
 ## 🚀 セットアップ
 
 ### 必要要件
@@ -94,31 +112,48 @@ npm run format
 ```
 src/
 ├── components/          # 再利用可能なコンポーネント
-│   ├── Icon.astro      # 統一されたアイコンコンポーネント
-│   ├── Header.astro    # サイトヘッダー
-│   ├── Footer.astro    # サイトフッター
-│   ├── MobileMenu.astro # モバイルメニュー
+│   ├── blog/           # ブログ関連コンポーネント
+│   │   ├── ArticleCard.astro    # 記事カード
+│   │   └── RelatedArticles.astro # 関連記事
+│   ├── layout/         # レイアウトコンポーネント
+│   │   ├── Header.astro         # サイトヘッダー
+│   │   ├── Footer.astro         # サイトフッター
+│   │   └── MobileMenu.astro     # モバイルメニュー
+│   ├── ui/             # 基本UIコンポーネント
+│   │   ├── Button.astro         # ボタン
+│   │   ├── DateBadge.astro      # 日付バッジ
+│   │   └── Tag.astro            # タグ
 │   ├── SearchBox.astro # 検索機能
 │   ├── ThemeToggle.astro # テーマ切り替え
-│   └── ArticleCard.astro # 記事カード
+│   └── TableOfContents.astro # 目次
 ├── content/             # コンテンツ管理
 │   ├── blog/           # ブログ記事（Markdown/MDX）
 │   └── config.ts       # コンテンツ設定
 ├── layouts/            # ページレイアウト
 │   └── Layout.astro    # ベースレイアウト
 ├── lib/                # ライブラリ・ユーティリティ
+│   ├── constants/      # 設定定数
+│   │   ├── blog.ts     # ブログ設定
+│   │   ├── site.ts     # サイト設定
+│   │   └── ui.ts       # UI設定
 │   └── utils/          # ヘルパー関数
-│       └── classNames.ts # CSSクラス管理
+│       ├── blog.ts     # ブログ関連ユーティリティ
+│       ├── date.ts     # 日付フォーマット
+│       └── styles.ts   # スタイル関連
 ├── pages/              # ファイルベースルーティング
 │   ├── index.astro     # ホームページ
 │   ├── blog/           # ブログ関連ページ
+│   ├── tags/           # タグ関連ページ
+│   ├── search.astro    # 検索ページ
 │   └── rss.xml.js      # RSSフィード生成
 ├── styles/             # スタイルシート
 │   ├── global.css      # グローバルスタイル
 │   ├── components.css  # コンポーネントスタイル
 │   └── remark-link-card.css # リンクカードスタイル
 └── types/              # TypeScript型定義
-    └── blog.ts         # ブログ関連の型
+    ├── index.ts        # 統合エクスポート
+    ├── blog.ts         # ブログ関連の型
+    └── ui.ts           # UI関連の型
 ```
 
 ## ✍️ 記事の作成

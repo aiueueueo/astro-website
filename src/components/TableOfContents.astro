@@ -62,12 +62,11 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 
 <style>
   .toc-container {
-    @apply w-64 flex-shrink-0;
+    @apply w-full;
   }
   
   .toc-sticky {
-    @apply sticky bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm;
-    top: 6rem;
+    @apply bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm;
     max-height: calc(100vh - 8rem);
     overflow-y: auto;
   }
@@ -94,11 +93,22 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 </style>
 
 <script>
+  let scrollHandler = null;
+  let resizeHandler = null;
+  
   function initTableOfContents() {
+    // 既存のイベントリスナーをクリーンアップ
+    if (scrollHandler) {
+      window.removeEventListener('scroll', scrollHandler);
+    }
+    if (resizeHandler) {
+      window.removeEventListener('resize', resizeHandler);
+    }
+    
     const progressBar = document.getElementById('progress-bar');
     const progressText = document.getElementById('reading-progress');
     const tocLinks = document.querySelectorAll('.toc-nav a');
-    const headings = document.querySelectorAll('h2, h3');
+    const headings = document.querySelectorAll('article h2, article h3');
     
     if (!progressBar || !progressText || !headings.length) return;
 
@@ -155,7 +165,7 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
       });
       
       // アクティブな見出しに対応するリンクをハイライト
-      if (activeHeading) {
+      if (activeHeading && activeHeading instanceof HTMLElement) {
         const activeLink = document.querySelector(`.toc-nav a[data-heading-id="${activeHeading.id}"]`);
         if (activeLink) {
           activeLink.classList.add('active');
@@ -185,9 +195,13 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
       });
     });
 
+    // イベントハンドラーを保存
+    scrollHandler = handleScroll;
+    resizeHandler = updateProgress;
+    
     // イベントリスナー設定
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', updateProgress, { passive: true });
+    window.addEventListener('scroll', scrollHandler, { passive: true });
+    window.addEventListener('resize', resizeHandler, { passive: true });
     
     // 初期化実行
     handleScroll();
@@ -199,6 +213,9 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
   } else {
     initTableOfContents();
   }
+  
+  // Astroのページ遷移後にも再初期化
+  document.addEventListener('astro:page-load', initTableOfContents);
 </script>
 
 <style is:global>

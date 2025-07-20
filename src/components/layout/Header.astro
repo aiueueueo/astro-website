@@ -1,0 +1,93 @@
+---
+import MobileMenu from './MobileMenu.astro';
+import ThemeToggle from '../ThemeToggle.astro';
+import SearchBox from '../SearchBox.astro';
+import SocialLinks from '../SocialLinks.astro';
+import { getNavLinkClasses } from '../../lib/utils';
+import { SITE_CONFIG } from '../../lib/constants';
+import type { NavItem } from '../../types';
+
+export interface Props {
+  currentPage?: string;
+}
+
+const { currentPage = '' } = Astro.props;
+
+// ナビゲーションアイテムの定義（設定から分離可能）
+const navigationItems: NavItem[] = [
+  { label: 'Blog', href: '/blog' },
+  { label: 'Tags', href: '/tags' }
+];
+
+// ナビゲーションリンクのクラスを生成
+const getNavItemClasses = (href: string) => {
+  const page = href.slice(1); // "/blog" → "blog"
+  return getNavLinkClasses(currentPage, page);
+};
+
+// ホームリンクのクラス
+const homeLinkClasses = getNavLinkClasses(
+  currentPage, 
+  'home',
+  'text-xl font-bold transition-colors',
+  'text-blue-600 dark:text-blue-400',
+  'text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400'
+);
+---
+
+<header class="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center h-16">
+      <!-- Left: Mobile Menu + Blog Name -->
+      <div class="flex items-center flex-1">
+        <MobileMenu currentPage={currentPage} />
+        
+        <!-- Blog Name/Logo -->
+        <a 
+          href="/" 
+          class={homeLinkClasses}
+          aria-label={`${SITE_CONFIG.TITLE} ホームページ`}
+        >
+          {SITE_CONFIG.TITLE}
+        </a>
+      </div>
+      
+      <!-- Center: Desktop Navigation -->
+      <nav 
+        class="hidden md:flex items-center space-x-6 flex-1 justify-center"
+        aria-label="メインナビゲーション"
+      >
+        {navigationItems.map((item) => (
+          <a 
+            href={item.href} 
+            class={getNavItemClasses(item.href)}
+            aria-label={`${item.label}ページへ移動`}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+      
+      <!-- Right: Search, Theme Toggle & Social Links -->
+      <div class="flex items-center space-x-3 flex-1 justify-end">
+        <SearchBox />
+        <ThemeToggle />
+        <SocialLinks />
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* ヘッダーのスムーズな表示効果 */
+  header {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  /* アクセシビリティ: フォーカス表示の改善 */
+  nav a:focus {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+</style>

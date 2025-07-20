@@ -1,0 +1,174 @@
+---
+import { getNavLinkClasses } from '../../lib/utils';
+import { SOCIAL_LINKS } from '../../lib/constants';
+import Button from '../ui/Button.astro';
+import TwitterIcon from '../icons/TwitterIcon.astro';
+import GitHubIcon from '../icons/GitHubIcon.astro';
+import type { NavItem } from '../../types';
+
+export interface Props {
+  currentPage?: string;
+}
+
+const { currentPage = '' } = Astro.props;
+
+// ナビゲーションアイテムの定義
+const navigationItems: NavItem[] = [
+  { label: 'Blog', href: '/blog' },
+  { label: 'Tags', href: '/tags' }
+];
+
+// ソーシャルリンクの定義
+const socialItems = [
+  { 
+    name: 'Twitter', 
+    href: SOCIAL_LINKS.TWITTER, 
+    icon: TwitterIcon,
+    label: 'Twitter'
+  },
+  { 
+    name: 'GitHub', 
+    href: SOCIAL_LINKS.GITHUB, 
+    icon: GitHubIcon,
+    label: 'GitHub'
+  }
+];
+
+// ナビゲーションリンクのクラスを生成
+const getNavItemClasses = (href: string) => {
+  const page = href.slice(1); // "/blog" → "blog"
+  const baseClasses = 'block px-3 py-2 rounded-lg transition-colors';
+  const activeClasses = 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 font-medium';
+  const inactiveClasses = 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800';
+  
+  return getNavLinkClasses(currentPage, page, baseClasses, activeClasses, inactiveClasses);
+};
+---
+
+<!-- Mobile Menu Button -->
+<Button
+  id="mobile-menu-btn"
+  variant="ghost"
+  size="sm"
+  class="md:hidden mr-3 p-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+  aria-label="メニューを開く"
+>
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+  </svg>
+</Button>
+
+<!-- Mobile Navigation Menu -->
+<div 
+  id="mobile-menu" 
+  class="hidden md:hidden absolute top-16 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-lg z-40"
+  role="dialog"
+  aria-label="モバイルナビゲーションメニュー"
+>
+  <nav class="px-4 py-4 space-y-3" role="navigation">
+    {navigationItems.map((item) => (
+      <a 
+        href={item.href} 
+        class={getNavItemClasses(item.href)}
+      >
+        {item.label}
+      </a>
+    ))}
+    
+    <!-- Social Links in Mobile Menu -->
+    <div class="pt-3 border-t border-gray-200 dark:border-gray-700">
+      <div class="flex items-center space-x-4 px-3">
+        {socialItems.map((social) => (
+          <a 
+            href={social.href} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            aria-label={`${social.label}を開く（新しいタブ）`}
+          >
+            <social.icon class="w-5 h-5" />
+            <span class="text-sm">{social.name}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </nav>
+</div>
+
+<script>
+  interface MobileMenuElements {
+    button: HTMLElement;
+    menu: HTMLElement;
+  }
+
+  function initMobileMenu(): void {
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (!mobileMenuBtn || !mobileMenu) return;
+
+    const elements: MobileMenuElements = {
+      button: mobileMenuBtn,
+      menu: mobileMenu
+    };
+
+    // メニューの開閉
+    elements.button.addEventListener('click', () => {
+      const isHidden = elements.menu.classList.contains('hidden');
+      
+      if (isHidden) {
+        openMenu(elements);
+      } else {
+        closeMenu(elements);
+      }
+    });
+
+    // メニュー外クリックで閉じる
+    document.addEventListener('click', (e) => {
+      const target = e.target as Node;
+      if (!elements.button.contains(target) && !elements.menu.contains(target)) {
+        closeMenu(elements);
+      }
+    });
+
+    // Escapeキーで閉じる
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeMenu(elements);
+      }
+    });
+  }
+
+  function openMenu(elements: MobileMenuElements): void {
+    elements.menu.classList.remove('hidden');
+    elements.button.setAttribute('aria-expanded', 'true');
+    elements.button.setAttribute('aria-label', 'メニューを閉じる');
+  }
+
+  function closeMenu(elements: MobileMenuElements): void {
+    elements.menu.classList.add('hidden');
+    elements.button.setAttribute('aria-expanded', 'false');
+    elements.button.setAttribute('aria-label', 'メニューを開く');
+  }
+
+  // 初期化（ページ読み込み時とナビゲーション時）
+  document.addEventListener('DOMContentLoaded', initMobileMenu);
+  document.addEventListener('astro:page-load', initMobileMenu);
+</script>
+
+<style>
+  /* スムーズなアニメーション効果 */
+  #mobile-menu {
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  }
+  
+  #mobile-menu.hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  
+  #mobile-menu:not(.hidden) {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>

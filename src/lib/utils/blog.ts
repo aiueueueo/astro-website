@@ -1,6 +1,6 @@
-import type { BlogPost, ArticleData, TagInfo } from '../types/blog';
+import type { BlogPost, ArticleData, TagInfo } from '../../types';
 import { formatISODate } from './date';
-import { DEFAULT_IMAGES } from '../config/constants';
+import { SITE_CONFIG } from '../constants';
 
 /**
  * ブログ記事をArticleDataに変換
@@ -9,7 +9,7 @@ export function transformBlogPost(post: BlogPost): ArticleData {
   return {
     title: post.data.title,
     description: post.data.description,
-    image: post.data.heroImage || DEFAULT_IMAGES.ARTICLE,
+    image: post.data.heroImage || SITE_CONFIG.DEFAULT_IMAGES.ARTICLE,
     tags: post.data.tags,
     date: formatISODate(post.data.pubDate),
     slug: post.slug,
