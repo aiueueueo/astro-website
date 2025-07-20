@@ -75,7 +75,6 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
                 variant="default"
                 size="sm"
                 interactive={true}
-                onclick="event.stopPropagation()"
               />
             ))}
           </div>
@@ -142,8 +141,6 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
               variant="default"
               size="sm"
               interactive={true}
-              onclick="event.stopPropagation()"
-              style={`transition-delay: ${index * 50}ms`}
               class="transform hover:scale-105 hover:shadow-sm"
             />
           ))}

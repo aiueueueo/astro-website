@@ -165,7 +165,7 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
       });
       
       // アクティブな見出しに対応するリンクをハイライト
-      if (activeHeading) {
+      if (activeHeading && activeHeading instanceof HTMLElement) {
         const activeLink = document.querySelector(`.toc-nav a[data-heading-id="${activeHeading.id}"]`);
         if (activeLink) {
           activeLink.classList.add('active');

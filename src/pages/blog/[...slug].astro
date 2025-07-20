@@ -174,7 +174,9 @@ function formatDate(date: Date) {
       const backUrl = `/blog/page/${fromPage}/`;
       const backLinks = document.querySelectorAll('.back-to-blog-link');
       backLinks.forEach(link => {
-        link.href = backUrl;
+        if (link instanceof HTMLAnchorElement) {
+          link.href = backUrl;
+        }
       });
     }
   });
