@@ -3,12 +3,12 @@
  */
 
 export const SITE_CONFIG = {
-  TITLE: "Blog",
+  TITLE: "aiueueue's blog",
   DESCRIPTION: "Web開発とプログラミングに関するブログ",
-  COPYRIGHT: "© 2024 Blog. All rights reserved.",
+  COPYRIGHT: "© 2024 aiueueue's blog. All rights reserved.",
   
   // SEO関連
-  AUTHOR: "Blog Author",
+  AUTHOR: "aiueueue",
   LANGUAGE: "ja",
   
   // URLs
@@ -23,7 +23,7 @@ export const SITE_CONFIG = {
 } as const;
 
 export const SOCIAL_LINKS = {
-  GITHUB: "https://github.com",
+  GITHUB: "https://github.com/aiueueueo",
   TWITTER: "https://twitter.com", 
   RSS: "/rss.xml"
 } as const;

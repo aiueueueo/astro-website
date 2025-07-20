@@ -28,6 +28,21 @@
   - 現在の仮の内容から実際のサイト情報に更新
   - SEO対策も考慮した適切な説明文に変更
 
+- [ ] **サイト設定の最終調整（必要に応じて変更）**
+  - `src/lib/constants/site.ts`の以下項目を必要に応じて調整
+  - **TITLE**: `"aiueueue's blog"` → より適切なサイト名に変更する場合
+  - **DESCRIPTION**: `"Web開発とプログラミングに関するブログ"` → より具体的な説明に変更する場合
+  - **COPYRIGHT**: `"© 2024 aiueueue's blog. All rights reserved."` → 表記形式を変更する場合
+  - 対象ファイル: `src/lib/constants/site.ts`
+  - 注意: SEO・ブランディングを考慮して決定
+
+- [ ] **本番ドメイン取得後のURL設定更新**
+  - `src/lib/constants/site.ts`のBASE_URL更新
+  - 現在: `BASE_URL: "https://your-domain.com"`
+  - 更新内容: 実際の本番ドメインに変更
+  - 対象箇所: SITE_CONFIG.BASE_URL
+  - 注意: ドメイン取得・設定完了後に実施
+
 - [ ] **ヘッダーとフッターのナビゲーション改善**
   - ヘッダー左のblogリンク（ホーム画面遷移）を削除
   - フッター中央にhomeリンクまたは家アイコンを追加してホーム画面遷移を実現
