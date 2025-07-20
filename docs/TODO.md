@@ -28,6 +28,20 @@
   - 現在の仮の内容から実際のサイト情報に更新
   - SEO対策も考慮した適切な説明文に変更
 
+- [ ] **ヘッダーとフッターのナビゲーション改善**
+  - ヘッダー左のblogリンク（ホーム画面遷移）を削除
+  - フッター中央にhomeリンクまたは家アイコンを追加してホーム画面遷移を実現
+  - ナビゲーションの一貫性向上とユーザビリティ改善
+  - 対象ファイル:
+    - `src/components/layout/Header.astro`（blogリンク削除）
+    - `src/components/layout/Footer.astro`（homeリンク追加）
+
+- [ ] **フッター右下の「Built with Astro」表記の検討**
+  - 現在の「Built with Astro」文字列の表示方法・位置・デザインを検討
+  - より適切な表記やデザインに変更するか検討
+  - サイトのデザインとの調和を考慮
+  - 対象ファイル: `src/components/layout/Footer.astro`
+
 - [ ] **フッター情報の更新**
   - フッター左下の「All rights reserved」表記を変更
   - より適切な著作権表記に更新
