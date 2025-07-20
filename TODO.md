@@ -106,3 +106,24 @@
   - ドメイン設定
   - 本番環境テスト
   - パフォーマンス確認
+
+## GitHub Actions / CI/CD
+- [ ] **Slack連携再稼働時の修正事項**
+  - **Claude Code Action バージョンアップデート**
+    - 対象ファイル: `.github/workflows/claude-slack.yml.disabled` (19行目)
+    - 修正内容: `@beta` → `@v0.0.3` に変更
+    - 理由: 最新の安定版は 2025-05-19 リリースの v0.0.3、ベータ版は不安定な可能性あり
+    - 今後の安定版は [GitHub リポジトリの「Releases」タブ](https://github.com/anthropics/claude-code-action/releases) で確認
+  - **MCP設定の環境変数名不整合修正**
+    - 対象ファイル: `.github/workflows/claude-slack.yml.disabled` (42行目・44行目)
+    - 問題: 環境変数名の不整合（SLACK_CHANNEL_IDS vs SLACK_CHANNEL_ID）
+    - 修正内容（どちらか選択）:
+      - 案1: `"SLACK_CHANNEL_IDS": "${{ secrets.SLACK_CHANNEL_ID }}"` → `"SLACK_CHANNEL_IDS": "${{ secrets.SLACK_CHANNEL_IDS }}"`
+      - 案2: `"SLACK_CHANNEL_IDS",` → `"SLACK_CHANNEL_ID",` （args配列内も統一）
+    - 理由: この不整合により将来ワークフローを有効化した際に正しく動作しない可能性
+  - **再稼働手順**:
+    1. `claude-slack.yml.disabled` を `claude-slack.yml` にリネーム
+    2. 19行目のバージョン指定を `@v0.0.3` に変更
+    3. 42行目・44行目の環境変数名不整合を修正
+    4. Slack設定（シークレット等）を確認・更新
+    5. テスト実行して正常動作を確認
