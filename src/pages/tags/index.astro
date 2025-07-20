@@ -1,7 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Tag from '../../components/ui/Tag.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getCollection } from 'astro:content';
 import '../../styles/global.css';
@@ -59,7 +60,7 @@ function getTagColor(tag: string) {
     
     <!-- Page Title -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      <h1 class="page-title mb-2">
         Tags
       </h1>
       <p class="text-gray-600 dark:text-gray-400">
@@ -103,7 +104,7 @@ function getTagColor(tag: string) {
               type="text"
               id="tag-search"
               placeholder="タグを検索..."
-              class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              class="input-field pl-10"
             />
           </div>
         </div>
@@ -112,7 +113,7 @@ function getTagColor(tag: string) {
         <div class="flex gap-2">
           <select
             id="sort-option"
-            class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="input-field"
           >
             <option value="count">使用回数順</option>
             <option value="name">アルファベット順</option>
@@ -120,7 +121,7 @@ function getTagColor(tag: string) {
           
           <select
             id="min-count"
-            class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="input-field"
           >
             <option value="1">全て表示</option>
             <option value="2">2回以上</option>
@@ -134,7 +135,7 @@ function getTagColor(tag: string) {
       <!-- Clear Filters -->
       <button
         id="clear-filters"
-        class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hidden"
+        class="link-button text-sm hidden"
       >
         フィルターをクリア
       </button>
