@@ -28,6 +28,35 @@
   - 現在の仮の内容から実際のサイト情報に更新
   - SEO対策も考慮した適切な説明文に変更
 
+- [ ] **サイト設定の最終調整（必要に応じて変更）**
+  - `src/lib/constants/site.ts`の以下項目を必要に応じて調整
+  - **TITLE**: `"aiueueue's blog"` → より適切なサイト名に変更する場合
+  - **DESCRIPTION**: `"Web開発とプログラミングに関するブログ"` → より具体的な説明に変更する場合
+  - **COPYRIGHT**: `"© 2024 aiueueue's blog. All rights reserved."` → 表記形式を変更する場合
+  - 対象ファイル: `src/lib/constants/site.ts`
+  - 注意: SEO・ブランディングを考慮して決定
+
+- [ ] **本番ドメイン取得後のURL設定更新**
+  - `src/lib/constants/site.ts`のBASE_URL更新
+  - 現在: `BASE_URL: "https://your-domain.com"`
+  - 更新内容: 実際の本番ドメインに変更
+  - 対象箇所: SITE_CONFIG.BASE_URL
+  - 注意: ドメイン取得・設定完了後に実施
+
+- [ ] **ヘッダーとフッターのナビゲーション改善**
+  - ヘッダー左のblogリンク（ホーム画面遷移）を削除
+  - フッター中央にhomeリンクまたは家アイコンを追加してホーム画面遷移を実現
+  - ナビゲーションの一貫性向上とユーザビリティ改善
+  - 対象ファイル:
+    - `src/components/layout/Header.astro`（blogリンク削除）
+    - `src/components/layout/Footer.astro`（homeリンク追加）
+
+- [ ] **フッター右下の「Built with Astro」表記の検討**
+  - 現在の「Built with Astro」文字列の表示方法・位置・デザインを検討
+  - より適切な表記やデザインに変更するか検討
+  - サイトのデザインとの調和を考慮
+  - 対象ファイル: `src/components/layout/Footer.astro`
+
 - [ ] **フッター情報の更新**
   - フッター左下の「All rights reserved」表記を変更
   - より適切な著作権表記に更新

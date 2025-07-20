@@ -1,8 +1,10 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import ArticleCard from './ArticleCard.astro';
-import { getRelatedPosts } from '../utils/relatedArticles';
 import { getCollection } from 'astro:content';
+import { transformBlogPost } from '../../lib/utils';
+import { BLOG_CONFIG } from '../../lib/constants';
+import ArticleCard from './ArticleCard.astro';
+import Button from '../ui/Button.astro';
 
 export interface Props {
   currentPost: CollectionEntry<'blog'>;
@@ -10,32 +12,54 @@ export interface Props {
   useAdvanced?: boolean;
 }
 
-const { currentPost, maxResults = 3, useAdvanced = false } = Astro.props;
+const { 
+  currentPost, 
+  maxResults = BLOG_CONFIG.RELATED_ARTICLES.MAX_RESULTS, 
+  useAdvanced = false 
+} = Astro.props;
 
 // 全ての公開記事を取得
 const allPosts = await getCollection('blog');
 
-const relatedPosts = getRelatedPosts(currentPost, allPosts, {
-  maxResults,
-  useAdvanced,
-  minRelatedScore: 0.05
-});
+// シンプルな関連記事取得ロジック（タグベース）
+const publishedPosts = allPosts.filter(post => !post.data.draft && post.slug !== currentPost.slug);
+const currentTags = currentPost.data.tags;
 
-// 関連記事を ArticleCard で使える形式に変換
-const relatedArticles = relatedPosts.map(post => ({
-  title: post.title,
-  description: post.description,
-  image: post.heroImage || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop",
-  tags: post.tags,
-  date: post.pubDate.toISOString().split('T')[0],
-  slug: post.slug
-}));
+const relatedPosts = publishedPosts
+  .map(post => {
+    const commonTags = post.data.tags.filter(tag => currentTags.includes(tag));
+    return {
+      ...post.data,
+      slug: post.slug,
+      score: commonTags.length
+    };
+  })
+  .filter(post => post.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, maxResults);
+
+// 関連記事をArticleCard で使える形式に変換
+const relatedArticles = relatedPosts.map(post => transformBlogPost({
+  data: post,
+  slug: post.slug,
+  body: ''
+} as CollectionEntry<'blog'>));
+
+// 関連度の高い記事があるかチェック
+const hasHighRelevance = relatedPosts.some(post => post.score > 0);
 ---
 
 {relatedArticles.length > 0 && (
-  <section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+  <section 
+    class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+    aria-labelledby="related-articles-heading"
+  >
+    <!-- セクションヘッダー -->
     <div class="mb-6">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <h2 
+        id="related-articles-heading"
+        class="text-2xl font-bold text-gray-900 dark:text-white mb-2"
+      >
         関連記事
       </h2>
       <p class="text-sm text-gray-600 dark:text-gray-400">
@@ -43,17 +67,20 @@ const relatedArticles = relatedPosts.map(post => ({
       </p>
     </div>
     
+    <!-- 関連記事グリッド -->
     <div class="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
       {relatedArticles.map((article, index) => (
         <div class="relative group related-article-card">
           <!-- 関連度インジケーター -->
-          {relatedPosts[index].commonTags > 0 && (
+          {relatedPosts[index].score > 0 && (
             <div class="absolute top-2 right-2 z-10">
               <div class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 713 12V7a4 4 0 014-4z"></path>
                 </svg>
-                {relatedPosts[index].commonTags}
+                <span aria-label={`共通タグ数: ${relatedPosts[index].score}`}>
+                  {relatedPosts[index].score}
+                </span>
               </div>
             </div>
           )}
@@ -68,11 +95,11 @@ const relatedArticles = relatedPosts.map(post => ({
     </div>
     
     <!-- 関連記事が見つからない場合の説明 -->
-    {relatedPosts.every(post => post.commonTags === 0) && (
+    {!hasHighRelevance && (
       <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
         <div class="flex items-start gap-3">
           <div class="flex-shrink-0">
-            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
           </div>
@@ -89,7 +116,7 @@ const relatedArticles = relatedPosts.map(post => ({
     )}
     
     <!-- 関連度の説明 -->
-    {relatedPosts.some(post => post.commonTags > 0) && (
+    {hasHighRelevance && (
       <div class="mt-6 text-center">
         <details class="inline-block text-left">
           <summary class="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
@@ -111,38 +138,46 @@ const relatedArticles = relatedPosts.map(post => ({
 
 <!-- 関連記事が全く見つからない場合 -->
 {relatedArticles.length === 0 && (
-  <section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+  <section 
+    class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+    aria-labelledby="no-related-articles-heading"
+  >
     <div class="text-center py-12">
       <div class="text-gray-400 dark:text-gray-600 mb-4">
-        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+      <h3 
+        id="no-related-articles-heading"
+        class="text-lg font-medium text-gray-900 dark:text-white mb-2"
+      >
         関連記事がありません
       </h3>
       <p class="text-gray-600 dark:text-gray-400 mb-6">
         この記事に関連する他の記事が見つかりませんでした
       </p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a 
+        <Button 
           href="/blog" 
-          class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          variant="primary"
+          size="md"
         >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0l-4 4m4-4l-4-4"></path>
           </svg>
           全ての記事を見る
-        </a>
-        <a 
+        </Button>
+        <Button 
           href="/search" 
-          class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-medium"
+          variant="secondary"
+          size="md"
         >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
           記事を検索
-        </a>
+        </Button>
       </div>
     </div>
   </section>
@@ -158,40 +193,21 @@ const relatedArticles = relatedPosts.map(post => ({
   /* モバイルでの関連記事カードのコンパクト表示 */
   @media (max-width: 767px) {
     .related-article-card {
-      transform: scale(0.8) !important;
-      transform-origin: top !important;
-      margin-bottom: 1rem !important;
-    }
-    .related-article-card img {
-      aspect-ratio: 16/9 !important;
-      height: auto !important;
-      max-height: 120px !important;
-    }
-    .related-article-card h2 {
-      font-size: 0.875rem !important;
-      line-height: 1.25rem !important;
-      margin-bottom: 0.5rem !important;
-    }
-    .related-article-card p {
-      font-size: 0.75rem !important;
-      line-height: 1rem !important;
-      margin-bottom: 0.5rem !important;
-      display: -webkit-box !important;
-      -webkit-line-clamp: 2 !important;
-      -webkit-box-orient: vertical !important;
-      overflow: hidden !important;
-    }
-    .related-article-card time {
-      font-size: 0.7rem !important;
-    }
-    .related-article-card a[href*="/tags/"] {
-      font-size: 0.65rem !important;
-      padding: 0.125rem 0.375rem !important;
+      transform: scale(0.9);
+      transform-origin: top;
+      margin-bottom: 0.5rem;
     }
   }
   
   /* 詳細の開閉アニメーション */
   details[open] summary {
     margin-bottom: 0.5rem;
+  }
+  
+  /* アクセシビリティ: フォーカス表示 */
+  summary:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 </style>

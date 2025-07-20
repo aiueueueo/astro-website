@@ -19,15 +19,6 @@ export interface ArticleData {
 }
 
 /**
- * ページネーション情報
- */
-export interface PaginationInfo {
-  currentPage: number;
-  totalPages: number;
-  postsPerPage: number;
-}
-
-/**
  * タグ情報
  */
 export interface TagInfo {
@@ -41,12 +32,4 @@ export interface TagInfo {
 export interface BreadcrumbItem {
   label: string;
   href?: string;
-}
-
-/**
- * 関連記事の情報
- */
-export interface RelatedArticle extends ArticleData {
-  commonTags?: string[];
-  score?: number;
 }

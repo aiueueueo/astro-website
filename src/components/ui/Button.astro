@@ -1,0 +1,62 @@
+---
+import type { ButtonProps } from '../../types';
+import { getButtonClasses } from '../../lib/utils';
+
+interface Props extends Omit<ButtonProps, 'class'> {
+  class?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  href,
+  type = 'button',
+  class: className,
+  id,
+  onClick,
+  ...rest
+} = Astro.props;
+
+const buttonClasses = getButtonClasses(variant, size, disabled);
+const finalClasses = className ? `${buttonClasses} ${className}` : buttonClasses;
+
+// リンクとして動作するかボタンとして動作するかを決定
+const isLink = !!href && !disabled;
+const Component = isLink ? 'a' : 'button';
+
+// リンクの場合のプロパティ
+const linkProps = isLink ? { href } : {};
+
+// ボタンの場合のプロパティ
+const buttonProps = !isLink ? { type, disabled } : {};
+---
+
+<Component
+  class={finalClasses}
+  id={id}
+  {...linkProps}
+  {...buttonProps}
+  {...rest}
+>
+  <slot />
+</Component>
+
+<style>
+  /* フォーカス時のアニメーション */
+  button:focus,
+  a:focus {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  /* アクティブ時の効果 */
+  button:active:not(:disabled),
+  a:active {
+    transform: translateY(1px);
+  }
+  
+  /* 無効状態の時のポインターイベント無効化 */
+  button:disabled {
+    pointer-events: none;
+  }
+</style>

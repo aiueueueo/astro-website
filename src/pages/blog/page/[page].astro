@@ -1,20 +1,20 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-import Header from '../../../components/Header.astro';
-import Footer from '../../../components/Footer.astro';
-import ArticleCard from '../../../components/ArticleCard.astro';
+import Header from '../../../components/layout/Header.astro';
+import Footer from '../../../components/layout/Footer.astro';
+import ArticleCard from '../../../components/blog/ArticleCard.astro';
 import Pagination from '../../../components/Pagination.astro';
 import Breadcrumb from '../../../components/Breadcrumb.astro';
 import { getCollection } from 'astro:content';
-import { getPublishedPosts, sortPostsByDate, transformBlogPost, paginatePosts, calculateTotalPages } from '../../../utils/blog';
-import { PAGINATION } from '../../../config/constants';
+import { getPublishedPosts, sortPostsByDate, transformBlogPost, paginatePosts, calculateTotalPages } from '../../../lib/utils/blog';
+import { BLOG_CONFIG } from '../../../lib/constants';
 import StructuredData from '../../../components/StructuredData.astro';
 
 export async function getStaticPaths() {
   const allPosts = await getCollection('blog');
   const publishedPosts = getPublishedPosts(allPosts);
   
-  const totalPages = calculateTotalPages(publishedPosts.length, PAGINATION.POSTS_PER_PAGE);
+  const totalPages = calculateTotalPages(publishedPosts.length, BLOG_CONFIG.PAGINATION.POSTS_PER_PAGE);
   
   return Array.from({ length: totalPages }, (_, i) => ({
     params: { page: (i + 1).toString() },
@@ -29,7 +29,7 @@ const { page, totalPages } = Astro.props;
 
 const allPosts = await getCollection('blog');
 const publishedPosts = sortPostsByDate(getPublishedPosts(allPosts));
-const paginatedPosts = paginatePosts(publishedPosts, page, PAGINATION.POSTS_PER_PAGE);
+const paginatedPosts = paginatePosts(publishedPosts, page, BLOG_CONFIG.PAGINATION.POSTS_PER_PAGE);
 const blogArticles = paginatedPosts.map(transformBlogPost);
 ---
 
