@@ -45,3 +45,6 @@ lerna-debug.log*
 # OS generated files
 Thumbs.db
 ehthumbs.db
+
+# Notes and documentation (local only)
+notes/
