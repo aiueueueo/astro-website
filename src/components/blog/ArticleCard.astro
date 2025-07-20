@@ -1,6 +1,5 @@
 ---
 import type { ArticleData } from '../../types';
-import { tagToSlug } from '../../utils/tags';
 import Tag from '../ui/Tag.astro';
 import DateBadge from '../ui/DateBadge.astro';
 
@@ -72,7 +71,7 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
             {displayTags.map((tag) => (
               <Tag
                 tag={tag}
-                href={`/tags/${tagToSlug(tag)}/`}
+                href={`/tags/${tag.toLowerCase().replace(/\s+/g, '-')}/`}
                 variant="default"
                 size="sm"
                 interactive={true}
@@ -139,7 +138,7 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
           {displayTags.map((tag, index) => (
             <Tag
               tag={tag}
-              href={`/tags/${tagToSlug(tag)}/`}
+              href={`/tags/${tag.toLowerCase().replace(/\s+/g, '-')}/`}
               variant="default"
               size="sm"
               interactive={true}

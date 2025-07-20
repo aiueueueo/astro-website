@@ -15,8 +15,5 @@ export * from './blog';
 // 日付関連ユーティリティ
 export * from './date';
 
-// バリデーション関連ユーティリティ
-export * from './validation';
-
 // 後方互換性のため（既存の場所からのインポートを保つ）
 export { classNames } from './styles';

@@ -1,7 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
-import { getRelatedPosts } from '../../utils/relatedArticles';
 import { transformBlogPost } from '../../lib/utils';
 import { BLOG_CONFIG } from '../../lib/constants';
 import ArticleCard from './ArticleCard.astro';
@@ -22,11 +21,22 @@ const {
 // 全ての公開記事を取得
 const allPosts = await getCollection('blog');
 
-const relatedPosts = getRelatedPosts(currentPost, allPosts, {
-  maxResults,
-  useAdvanced,
-  minRelatedScore: 0.05
-});
+// シンプルな関連記事取得ロジック（タグベース）
+const publishedPosts = allPosts.filter(post => !post.data.draft && post.slug !== currentPost.slug);
+const currentTags = currentPost.data.tags;
+
+const relatedPosts = publishedPosts
+  .map(post => {
+    const commonTags = post.data.tags.filter(tag => currentTags.includes(tag));
+    return {
+      ...post.data,
+      slug: post.slug,
+      score: commonTags.length
+    };
+  })
+  .filter(post => post.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, maxResults);
 
 // 関連記事をArticleCard で使える形式に変換
 const relatedArticles = relatedPosts.map(post => transformBlogPost({

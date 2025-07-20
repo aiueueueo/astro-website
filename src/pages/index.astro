@@ -5,7 +5,7 @@ import Footer from '../components/layout/Footer.astro';
 import ArticleCard from '../components/blog/ArticleCard.astro';
 import InstallPrompt from '../components/InstallPrompt.astro';
 import { getCollection } from 'astro:content';
-import { PAGINATION, DEFAULT_IMAGES } from '../config/constants';
+import { BLOG_CONFIG, SITE_CONFIG } from '../lib/constants';
 import StructuredData from '../components/StructuredData.astro';
 
 // Markdownファイルから記事を取得
@@ -13,11 +13,11 @@ const allPosts = await getCollection('blog');
 const articles = allPosts
   .filter(post => !post.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, PAGINATION.HOMEPAGE_POSTS) // 最新記事を表示
+  .slice(0, BLOG_CONFIG.PAGINATION.HOMEPAGE_POSTS) // 最新記事を表示
   .map(post => ({
     title: post.data.title,
     description: post.data.description,
-    image: post.data.heroImage || DEFAULT_IMAGES.ARTICLE,
+    image: post.data.heroImage || SITE_CONFIG.DEFAULT_IMAGES.ARTICLE,
     tags: post.data.tags,
     date: post.data.pubDate.toISOString().split('T')[0],
     slug: post.slug

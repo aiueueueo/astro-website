@@ -6,16 +6,16 @@ import ArticleCard from '../../components/blog/ArticleCard.astro';
 import Pagination from '../../components/Pagination.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getCollection } from 'astro:content';
-import { getPublishedPosts, sortPostsByDate, transformBlogPost, paginatePosts, calculateTotalPages } from '../../utils/blog';
-import { PAGINATION } from '../../config/constants';
+import { getPublishedPosts, sortPostsByDate, transformBlogPost, paginatePosts, calculateTotalPages } from '../../lib/utils/blog';
+import { BLOG_CONFIG } from '../../lib/constants';
 import StructuredData from '../../components/StructuredData.astro';
 
 // 記事データを取得・処理
 const allPosts = await getCollection('blog');
 const publishedPosts = sortPostsByDate(getPublishedPosts(allPosts));
 
-const totalPages = calculateTotalPages(publishedPosts.length, PAGINATION.POSTS_PER_PAGE);
-const paginatedPosts = paginatePosts(publishedPosts, 1, PAGINATION.POSTS_PER_PAGE);
+const totalPages = calculateTotalPages(publishedPosts.length, BLOG_CONFIG.PAGINATION.POSTS_PER_PAGE);
+const paginatedPosts = paginatePosts(publishedPosts, 1, BLOG_CONFIG.PAGINATION.POSTS_PER_PAGE);
 
 const blogArticles = paginatedPosts.map(transformBlogPost);
 ---
