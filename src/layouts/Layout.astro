@@ -25,57 +25,28 @@ const socialImage = image ? new URL(image, Astro.site) : new URL('/og-image.jpg'
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		
-		<!-- Prevent flash of wrong theme -->
+		<!-- Prevent flash of wrong theme - 軽量化版 -->
 		<script>
-			// This must run before any other content loads
-			const stored = localStorage.getItem('theme');
-			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			const isDark = stored === 'dark' || (!stored && prefersDark);
-			
-			if (isDark) {
-				document.documentElement.classList.add('dark');
-				document.documentElement.style.backgroundColor = '#111827';
-				document.documentElement.style.colorScheme = 'dark';
-			} else {
-				document.documentElement.classList.remove('dark');
-				document.documentElement.style.backgroundColor = '#f3f4f6';
-				document.documentElement.style.colorScheme = 'light';
-			}
-			
-			// Persist theme during navigation
-			document.addEventListener('astro:before-swap', function(event) {
-				const currentIsDark = document.documentElement.classList.contains('dark');
-				const bgColor = currentIsDark ? '#111827' : '#f3f4f6';
-				
-				// Force background color immediately
-				document.documentElement.style.backgroundColor = bgColor;
-				document.body.style.backgroundColor = bgColor;
-				
-				// Apply to new document as well
-				if (event.newDocument) {
-					event.newDocument.documentElement.style.backgroundColor = bgColor;
-					if (event.newDocument.body) {
-						event.newDocument.body.style.backgroundColor = bgColor;
-					}
-				}
-			});
-			
-			// Ensure background persists after swap
-			document.addEventListener('astro:after-swap', function() {
+			const applyTheme = () => {
 				const stored = localStorage.getItem('theme');
-				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-				const isDark = stored === 'dark' || (!stored && prefersDark);
-				const bgColor = isDark ? '#111827' : '#f3f4f6';
+				const isDark = stored === 'dark' || (!stored && matchMedia('(prefers-color-scheme: dark)').matches);
+				const root = document.documentElement;
 				
-				if (isDark) {
-					document.documentElement.classList.add('dark');
-				} else {
-					document.documentElement.classList.remove('dark');
-				}
-				
+				root.classList.toggle('dark', isDark);
+				root.style.backgroundColor = isDark ? '#111827' : '#f3f4f6';
+				root.style.colorScheme = isDark ? 'dark' : 'light';
+			};
+			
+			applyTheme();
+			
+			// 軽量化されたナビゲーション処理
+			document.addEventListener('astro:before-swap', (e) => {
+				const bgColor = document.documentElement.classList.contains('dark') ? '#111827' : '#f3f4f6';
 				document.documentElement.style.backgroundColor = bgColor;
-				document.body.style.backgroundColor = bgColor;
+				if (e.newDocument) e.newDocument.documentElement.style.backgroundColor = bgColor;
 			});
+			
+			document.addEventListener('astro:after-swap', applyTheme);
 		</script>
 		
 		<style>
@@ -134,21 +105,25 @@ const socialImage = image ? new URL(image, Astro.site) : new URL('/og-image.jpg'
 		
 		<!-- View Transitions -->
 		<ViewTransitions fallback="none" />
+		
+		<!-- Disable prefetch for better performance -->
+		<meta name="astro-prefetch" content="false" />
 	</head>
 	<body class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
 		<slot />
 		<script>
-			// Service Worker Registration
+			// Service Worker Registration - 遅延実行でパフォーマンス向上
 			if ('serviceWorker' in navigator) {
-				window.addEventListener('load', () => {
-					navigator.serviceWorker.register('/sw.js')
-						.then(registration => {
-							console.log('SW registered: ', registration);
-						})
-						.catch(registrationError => {
-							console.log('SW registration failed: ', registrationError);
-						});
-				});
+				// アイドル時または3秒後に登録
+				if (window.requestIdleCallback) {
+					window.requestIdleCallback(() => {
+						navigator.serviceWorker.register('/sw.js').catch(() => {});
+					});
+				} else {
+					setTimeout(() => {
+						navigator.serviceWorker.register('/sw.js').catch(() => {});
+					}, 3000);
+				}
 			}
 		</script>
 	</body>

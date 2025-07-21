@@ -14,14 +14,15 @@ const publishedPosts = allPosts
   .filter(post => !post.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
+// 軽量化: 検索に必要最小限のデータのみ送信
 const articles = publishedPosts.map(post => ({
   title: post.data.title,
-  description: post.data.description,
+  description: post.data.description.substring(0, 200), // 説明を200文字に制限
   image: post.data.heroImage || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop",
   tags: post.data.tags,
   date: post.data.pubDate.toISOString().split('T')[0],
   slug: post.slug,
-  content: cleanContentForSearch(post.body) // 関連記事情報を除外した検索用コンテンツ
+  content: cleanContentForSearch(post.body).substring(0, 500) // 検索用コンテンツを500文字に制限
 }));
 ---
 
