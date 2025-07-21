@@ -123,6 +123,20 @@
   - 記事の閲覧数表示
   - トレンド分析機能
 
+## コード整理・リファクタリング
+- [ ] **コンポーネント構成の整理**
+  - `src/components/`直下の散在しているコンポーネントを機能別にグループ化
+  - **移動予定の構成**:
+    - `common/` - 汎用コンポーネント（Breadcrumb, SearchBox, SocialLinks, SocialShare, StructuredData, ThemeToggle）
+    - `navigation/` - ナビゲーション関連（Pagination, MobileTableOfContents, TableOfContents）
+    - `pwa/` - PWA関連（InstallPrompt）
+  - **作業内容**:
+    - フォルダ作成と各ファイルの移動
+    - 全インポートパスの更新（各使用箇所で相対パス変更）
+    - 動作テスト（ビルド・表示確認）
+  - **メリット**: 整理整頓、可読性向上、保守性向上
+  - **優先度**: 低（現状でも十分機能している）
+
 ## デプロイ・運用
 - [ ] **Cloudflare Pages公開**
   - ドメイン設定
