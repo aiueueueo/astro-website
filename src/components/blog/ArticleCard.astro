@@ -35,6 +35,7 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
       href={articleUrl} 
       class="block rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-300 ease-out hover:shadow-md dark:hover:shadow-gray-900/20 hover:translate-y-[-1px]"
       aria-label={`記事「${title}」を読む`}
+      tabindex="0"
     >
       <div class="flex gap-4">
         <!-- 記事画像 -->
@@ -71,10 +72,9 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
             {displayTags.map((tag) => (
               <Tag
                 tag={tag}
-                href={`/search?q=${encodeURIComponent(tag)}`}
                 variant="default"
                 size="sm"
-                interactive={true}
+                interactive={false}
               />
             ))}
           </div>
@@ -89,6 +89,7 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
       href={articleUrl} 
       class="block relative overflow-hidden"
       aria-label={`記事「${title}」を読む`}
+      tabindex="0"
     >
       <!-- 記事画像 -->
       <div class="aspect-[4/3] overflow-hidden relative">
@@ -137,10 +138,9 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
           {displayTags.map((tag, index) => (
             <Tag
               tag={tag}
-              href={`/tags/${tag.toLowerCase().replace(/\s+/g, '-')}/`}
               variant="default"
               size="sm"
-              interactive={true}
+              interactive={false}
               class="transform hover:scale-105 hover:shadow-sm"
             />
           ))}
@@ -166,10 +166,27 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
     overflow: hidden;
   }
   
-  /* アクセシビリティ: フォーカス表示の改善 */
-  a:focus {
+  /* キーボードナビゲーション時のみフォーカス表示 */
+  article:has(a:focus-visible) {
     outline: 2px solid #3b82f6;
     outline-offset: 2px;
+    border-radius: 8px;
+  }
+  
+  /* リンクのデフォルトフォーカス枠を非表示 */
+  a:focus {
+    outline: none;
+  }
+  
+  /* 内部要素のフォーカスを防ぐ */
+  a * {
+    pointer-events: none;
+    user-select: none;
+  }
+  
+  /* aタグ自体はクリック可能にする */
+  a {
+    pointer-events: auto;
   }
   
   /* スムーズなアニメーション */
