@@ -10,6 +10,7 @@ import rehypeExternalLinks from 'rehype-external-links';
 
 export default defineConfig({
   site: 'https://astro-blog.pages.dev', // Cloudflare Pages URL
+  prefetch: false, // Disable prefetch for better performance
   integrations: [
     tailwind(),
     sitemap(),
