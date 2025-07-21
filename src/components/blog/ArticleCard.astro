@@ -71,7 +71,7 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
             {displayTags.map((tag) => (
               <Tag
                 tag={tag}
-                href={`/tags/${tag.toLowerCase().replace(/\s+/g, '-')}/`}
+                href={`/search?q=${encodeURIComponent(tag)}`}
                 variant="default"
                 size="sm"
                 interactive={true}

@@ -17,13 +17,14 @@ const publishedPosts = allPosts
 // 軽量化: 検索に必要最小限のデータのみ送信
 const articles = publishedPosts.map(post => ({
   title: post.data.title,
-  description: post.data.description.substring(0, 200), // 説明を200文字に制限
+  description: post.data.description || "",
   image: post.data.heroImage || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop",
   tags: post.data.tags,
   date: post.data.pubDate.toISOString().split('T')[0],
   slug: post.slug,
   content: cleanContentForSearch(post.body).substring(0, 500) // 検索用コンテンツを500文字に制限
 }));
+
 ---
 
 <Layout title="Search - aiueueue's blog" description="ブログ記事を検索">
@@ -44,41 +45,61 @@ const articles = publishedPosts.map(post => ({
         記事を検索
       </h1>
       
-      <!-- Search Input -->
-      <div class="relative max-w-2xl">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
+      <!-- Search Input with Button -->
+      <div class="mb-6">
+        <div class="flex max-w-2xl gap-2">
+          <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="記事を検索..."
+              class="input-field pl-12 text-lg"
+            />
+          </div>
+          <button
+            id="search-button"
+            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+          >
+            検索
+          </button>
         </div>
-        <input
-          type="text"
-          id="search-input"
-          placeholder="タイトル、内容、タグで検索..."
-          class="input-field pl-12 text-lg"
-        />
+      </div>
+
+      <!-- Related Tags (shown after search) -->
+      <div id="related-tags-section" class="mb-6 hidden">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">検索結果に含まれるタグ</h2>
+        <div id="related-tags-list" class="flex flex-wrap gap-2">
+          <!-- Tags will be populated dynamically -->
+        </div>
       </div>
       
       <!-- Search Stats -->
-      <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+      <div class="text-sm text-gray-600 dark:text-gray-400">
         <span id="search-stats">全 {articles.length} 件の記事</span>
       </div>
     </div>
 
+    <!-- Initial State Message -->
+    <div id="initial-message" class="text-center py-12">
+      <div class="text-gray-400 dark:text-gray-600 mb-4">
+        <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">記事を検索</h3>
+      <p class="text-gray-600 dark:text-gray-400">
+        検索ワードを入力して記事を検索してください
+      </p>
+    </div>
+
     <!-- Search Results -->
-    <div id="search-results" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-      {articles.map((article, index) => (
-        <ArticleCard 
-          title={article.title}
-          description={article.description}
-          image={article.image}
-          tags={article.tags}
-          date={article.date}
-          slug={article.slug}
-          compact={false}
-          eager={index < 3}
-        />
-      ))}
+    <div id="search-results" class="space-y-6 hidden">
+      <!-- 検索結果は動的に表示されます -->
     </div>
 
     <!-- No Results -->
@@ -110,53 +131,173 @@ const articles = publishedPosts.map(post => ({
 <script define:vars={{ articles }}>
   function initSearchPage() {
     const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
     const searchResults = document.getElementById('search-results');
     const noResults = document.getElementById('no-results');
     const searchStats = document.getElementById('search-stats');
     const clearButton = document.getElementById('clear-search');
+    const relatedTagsSection = document.getElementById('related-tags-section');
+    const relatedTagsList = document.getElementById('related-tags-list');
+    const initialMessage = document.getElementById('initial-message');
     
     // 要素が存在しない場合は早期リターン
-    if (!searchInput || !searchResults || !noResults || !searchStats || !clearButton) {
+    if (!searchInput || !searchButton || !searchResults || !noResults || !searchStats || !relatedTagsSection || !relatedTagsList || !initialMessage) {
       return;
     }
+    
+    let searchTimeout;
     
     // URLパラメータから検索クエリを取得
     const urlParams = new URLSearchParams(window.location.search);
     const initialQuery = urlParams.get('q') || '';
+    const isTagParam = urlParams.get('tag') === '1';
     
     if (initialQuery) {
       searchInput.value = initialQuery;
-      performSearch(initialQuery);
+      performSearch(initialQuery, isTagParam);
     }
     
-    function performSearch(query) {
+    function performSearch(query, isTagSearch = false) {
       const searchTerm = query.toLowerCase().trim();
       
       if (!searchTerm) {
-        showAllArticles();
+        showInitialState();
         return;
       }
       
-      // 記事をフィルタリング
+      // 記事をフィルタリングし、検索結果の詳細情報を付加
       const filteredArticles = articles.filter(article => {
-        const titleMatch = article.title.toLowerCase().includes(searchTerm);
-        const descriptionMatch = article.description.toLowerCase().includes(searchTerm);
-        const contentMatch = article.content.toLowerCase().includes(searchTerm);
-        const tagMatch = article.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+        if (isTagSearch) {
+          // タグ完全一致検索
+          return article.tags.some(tag => tag.toLowerCase() === searchTerm);
+        } else {
+          // 全文検索（タイトル・本文・タグ）
+          const titleMatch = article.title.toLowerCase().includes(searchTerm);
+          const contentMatch = article.content.toLowerCase().includes(searchTerm);
+          const tagMatch = article.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+          
+          return titleMatch || contentMatch || tagMatch;
+        }
+      }).map(article => {
+        // 検索結果に追加情報を付加
+        const result = { ...article };
         
-        return titleMatch || descriptionMatch || contentMatch || tagMatch;
+        if (!isTagSearch && searchTerm) {
+          // タイトルのハイライト
+          const titleMatch = article.title.toLowerCase().includes(searchTerm);
+          if (titleMatch) {
+            result.highlightedTitle = highlightText(article.title, query);
+          } else {
+            result.highlightedTitle = article.title;
+          }
+          
+          // スニペットを生成（本文にマッチした場合）
+          const contentMatch = article.content.toLowerCase().includes(searchTerm);
+          if (contentMatch) {
+            result.snippet = generateSnippet(article.content, query);
+            result.hasContentMatch = true;
+          } else {
+            result.snippet = article.description || generateFallbackSnippet(article.content);
+            result.hasContentMatch = false;
+          }
+        } else {
+          result.highlightedTitle = article.title;
+          result.snippet = article.description || generateFallbackSnippet(article.content);
+          result.hasContentMatch = false;
+        }
+        
+        return result;
       });
       
-      displayResults(filteredArticles, searchTerm);
+      displayResults(filteredArticles, searchTerm, isTagSearch);
     }
     
-    function displayResults(results, query) {
+    // スニペット生成関数
+    function generateSnippet(content, searchTerm, maxLength = 160) {
+      const lowerContent = content.toLowerCase();
+      const lowerTerm = searchTerm.toLowerCase();
+      
+      // 最初のマッチ位置を見つける
+      const matchIndex = lowerContent.indexOf(lowerTerm);
+      if (matchIndex === -1) {
+        return content.slice(0, maxLength) + (content.length > maxLength ? '...' : '');
+      }
+      
+      // スニペットの開始位置を計算（前後の文脈を含める）
+      const contextLength = Math.floor((maxLength - lowerTerm.length) / 2);
+      const startIndex = Math.max(0, matchIndex - contextLength);
+      const endIndex = Math.min(content.length, startIndex + maxLength);
+      
+      // 単語境界で調整
+      let snippet = content.slice(startIndex, endIndex);
+      
+      // 前後に省略記号を追加
+      if (startIndex > 0) snippet = '...' + snippet;
+      if (endIndex < content.length) snippet = snippet + '...';
+      
+      // 検索語をハイライト
+      const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+      snippet = snippet.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-600/50 px-1 rounded">$1</mark>');
+      
+      return snippet;
+    }
+    
+    // 正規表現の特殊文字をエスケープ
+    function escapeRegex(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+    
+    // テキストハイライト関数
+    function highlightText(text, searchTerm) {
+      if (!searchTerm) return text;
+      const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+      return text.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-600/50 px-1 rounded">$1</mark>');
+    }
+    
+    // フォールバックスニペット生成関数（descriptionがない場合用）
+    function generateFallbackSnippet(content, maxLength = 160) {
+      // HTMLタグや改行を除去し、最初の文から抜粋を作成
+      const cleanText = content
+        .replace(/```[\s\S]*?```/g, '') // コードブロックを除去
+        .replace(/#{1,6}\s/g, '') // マークダウンのヘッダーを除去
+        .replace(/\*\*(.*?)\*\*/g, '$1') // Bold記法を除去
+        .replace(/\*(.*?)\*/g, '$1') // Italic記法を除去
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // リンクを除去
+        .replace(/\n\s*\n/g, ' ') // 改行を除去
+        .replace(/\s+/g, ' ') // 複数スペースを単一スペースに
+        .trim();
+      
+      if (cleanText.length <= maxLength) {
+        return cleanText;
+      }
+      
+      // 文境界で切り捨て
+      const truncated = cleanText.substring(0, maxLength);
+      const lastSentenceEnd = Math.max(
+        truncated.lastIndexOf('。'),
+        truncated.lastIndexOf('.'),
+        truncated.lastIndexOf('!')
+      );
+      
+      if (lastSentenceEnd > maxLength * 0.7) {
+        return truncated.substring(0, lastSentenceEnd + 1);
+      }
+      
+      return truncated + '...';
+    }
+    
+    function displayResults(results, query, isTagSearch = false) {
       searchResults.innerHTML = '';
+      
+      // 初期メッセージを非表示
+      initialMessage.classList.add('hidden');
       
       if (results.length === 0) {
         searchResults.classList.add('hidden');
         noResults.classList.remove('hidden');
-        searchStats.textContent = `「${query}」の検索結果: 0件`;
+        relatedTagsSection.classList.add('hidden');
+        const searchType = isTagSearch ? 'タグ' : '';
+        searchStats.textContent = `「${query}」の${searchType}検索結果: 0件`;
       } else {
         noResults.classList.add('hidden');
         searchResults.classList.remove('hidden');
@@ -166,99 +307,237 @@ const articles = publishedPosts.map(post => ({
           searchResults.appendChild(articleElement);
         });
         
-        searchStats.textContent = `「${query}」の検索結果: ${results.length}件`;
+        // 検索結果からタグを抽出して表示
+        if (query) {
+          displayRelatedTags(results);
+        }
+        
+        const searchType = isTagSearch ? 'タグ' : '';
+        searchStats.textContent = `「${query}」の${searchType}検索結果: ${results.length}件`;
+      }
+    }
+    
+    function displayRelatedTags(results) {
+      // 検索結果の記事からタグを抽出
+      const tagCounts = new Map();
+      results.forEach(article => {
+        article.tags.forEach(tag => {
+          tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+        });
+      });
+      
+      // タグを使用回数順でソート
+      const sortedRelatedTags = Array.from(tagCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10); // 最大10個まで表示
+      
+      if (sortedRelatedTags.length > 0) {
+        relatedTagsList.innerHTML = '';
+        sortedRelatedTags.forEach(([tag, count]) => {
+          const tagButton = document.createElement('button');
+          tagButton.className = 'related-tag-button inline-flex items-center px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300 transition-all duration-200 cursor-pointer';
+          tagButton.innerHTML = `#${tag} <span class="ml-1 text-xs opacity-75">(${count})</span>`;
+          tagButton.addEventListener('click', () => searchByTag(tag));
+          relatedTagsList.appendChild(tagButton);
+        });
+        relatedTagsSection.classList.remove('hidden');
+      } else {
+        relatedTagsSection.classList.add('hidden');
       }
     }
     
     function createArticleElement(article) {
       const articleDiv = document.createElement('div');
-      articleDiv.innerHTML = `
-        <article class="group bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-sm hover:shadow-xl dark:shadow-gray-900/20 transition-all duration-300 ease-out hover:translate-y-[-4px] hover:ring-1 hover:ring-blue-500/20">
-          <a href="/blog/${article.slug}/" class="block relative overflow-hidden">
-            <div class="aspect-[4/3] overflow-hidden relative">
-              <img 
-                src="${article.image}" 
-                alt="${article.title}"
-                class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500 ease-out"
-                loading="lazy"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
-                  <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            <div class="p-6">
-              <div class="text-xs text-gray-500 dark:text-gray-400 inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md whitespace-nowrap mb-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-all duration-200">
-                ${new Date(article.date).toLocaleDateString('ja-JP', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </div>
-              
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-2">
-                ${article.title}
-              </h2>
-              
-              <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-3 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-200">
-                ${article.description}
-              </p>
-              
-              <div class="flex flex-wrap gap-2 transform group-hover:translate-y-[-2px] transition-transform duration-200">
-                ${article.tags.map((tag, index) => `
-                  <a 
-                    href="/tags/${tag.toLowerCase().replace(/\\s+/g, '-')}/" 
-                    class="inline-flex items-center px-2 py-0 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300 transition-all duration-200 leading-none h-5 transform hover:scale-105 hover:shadow-sm"
-                    onclick="event.stopPropagation()"
-                    style="transition-delay: ${index * 50}ms"
-                  >
-                    #${tag}
-                  </a>
-                `).join('')}
-              </div>
-            </div>
-          </a>
-        </article>
+      
+      // 記事要素を作成（検索結果用レイアウト）
+      const articleElement = document.createElement('article');
+      articleElement.className = 'group bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-sm hover:shadow-xl dark:shadow-gray-900/20 transition-all duration-300 ease-out hover:translate-y-[-2px] hover:ring-1 hover:ring-blue-500/20';
+      
+      const linkElement = document.createElement('a');
+      linkElement.href = `/blog/${article.slug}/`;
+      linkElement.className = 'flex flex-col sm:flex-row gap-0 sm:gap-4 md:gap-6 relative overflow-hidden';
+      
+      // 画像部分（検索結果用に最適化）
+      const imageDiv = document.createElement('div');
+      imageDiv.className = 'w-full sm:w-48 md:w-56 aspect-[16/9] sm:aspect-[3/2] overflow-hidden relative flex-shrink-0';
+      imageDiv.innerHTML = `
+        <img 
+          src="${article.image}" 
+          alt="${article.title}"
+          class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500 ease-out"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+          <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-1.5 shadow-lg">
+            <svg class="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+          </div>
+        </div>
       `;
+      
+      // コンテンツ部分
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'flex-1 p-4 sm:p-4 md:p-6 min-w-0';
+      
+      // 日付（カレンダーアイコン付き）
+      const dateDiv = document.createElement('div');
+      dateDiv.className = 'text-xs text-gray-500 dark:text-gray-400 inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md whitespace-nowrap mb-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-all duration-200';
+      
+      // カレンダーアイコンを追加（より確実な方法）
+      const calendarIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      calendarIcon.setAttribute('class', 'w-4 h-4 flex-shrink-0');
+      calendarIcon.setAttribute('fill', 'currentColor');
+      calendarIcon.setAttribute('viewBox', '0 0 20 20');
+      
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('fill-rule', 'evenodd');
+      path.setAttribute('d', 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z');
+      path.setAttribute('clip-rule', 'evenodd');
+      
+      calendarIcon.appendChild(path);
+      
+      // 日付テキスト
+      const timeElement = document.createElement('time');
+      timeElement.setAttribute('datetime', article.date);
+      timeElement.textContent = new Date(article.date).toLocaleDateString('ja-JP', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      dateDiv.appendChild(calendarIcon);
+      dateDiv.appendChild(timeElement);
+      
+      // タイトル（ハイライト対応）
+      const titleH2 = document.createElement('h2');
+      titleH2.className = 'text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200';
+      titleH2.style.display = '-webkit-box';
+      titleH2.style.webkitLineClamp = '2';
+      titleH2.style.webkitBoxOrient = 'vertical';
+      titleH2.style.overflow = 'hidden';
+      titleH2.innerHTML = article.highlightedTitle || article.title;
+      
+      
+      // スニペット（ハイライト対応）
+      const snippetDiv = document.createElement('div');
+      snippetDiv.className = 'text-sm text-gray-600 dark:text-gray-300 mb-3';
+      snippetDiv.style.display = '-webkit-box';
+      snippetDiv.style.webkitLineClamp = '4';
+      snippetDiv.style.webkitBoxOrient = 'vertical';
+      snippetDiv.style.overflow = 'hidden';
+      snippetDiv.innerHTML = article.snippet || article.description;
+      
+      
+      // タグ
+      const tagsDiv = document.createElement('div');
+      tagsDiv.className = 'flex flex-wrap gap-2 transform group-hover:translate-y-[-2px] transition-transform duration-200';
+      
+      article.tags.forEach((tag, index) => {
+        const tagButton = document.createElement('button');
+        tagButton.className = 'tag-search-button inline-flex items-center px-2 py-0 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300 transition-all duration-200 leading-none h-5 transform hover:scale-105 hover:shadow-sm';
+        tagButton.textContent = `#${tag}`;
+        tagButton.style.transitionDelay = `${index * 50}ms`;
+        tagButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          searchByTag(tag);
+        });
+        tagsDiv.appendChild(tagButton);
+      });
+      
+      // 要素を組み立て
+      contentDiv.appendChild(dateDiv);
+      contentDiv.appendChild(titleH2);
+      contentDiv.appendChild(snippetDiv);
+      contentDiv.appendChild(tagsDiv);
+      
+      linkElement.appendChild(imageDiv);
+      linkElement.appendChild(contentDiv);
+      articleElement.appendChild(linkElement);
+      articleDiv.appendChild(articleElement);
+      
       return articleDiv;
     }
     
-    function showAllArticles() {
-      displayResults(articles, '');
+    function showInitialState() {
+      // すべての結果エリアを非表示にし、初期メッセージを表示
+      searchResults.classList.add('hidden');
+      noResults.classList.add('hidden');
+      initialMessage.classList.remove('hidden');
+      relatedTagsSection.classList.add('hidden');
       searchStats.textContent = `全 ${articles.length} 件の記事`;
+      searchInput.value = '';
     }
     
-    // 既存のイベントリスナーを削除して新しく追加
-    const inputHandler = (e) => {
-      const query = e.target.value;
-      performSearch(query);
+    // タグ検索関数
+    function searchByTag(tag) {
+      searchInput.value = tag;
+      performSearch(tag, true);
       
-      // URLを更新（履歴には追加しない）
-      const newUrl = query 
-        ? `${window.location.pathname}?q=${encodeURIComponent(query)}`
-        : window.location.pathname;
+      // URLを更新
+      const newUrl = `${window.location.pathname}?q=${encodeURIComponent(tag)}&tag=1`;
       window.history.replaceState({}, '', newUrl);
+    }
+    
+    // グローバルに関数を公開
+    window.searchByTag = searchByTag;
+    
+    // 検索ボタンのクリックハンドラー
+    const searchHandler = () => {
+      const query = searchInput.value.trim();
+      if (query) {
+        performSearch(query);
+        
+        // URLを更新
+        const newUrl = `${window.location.pathname}?q=${encodeURIComponent(query)}`;
+        window.history.replaceState({}, '', newUrl);
+      } else {
+        showInitialState();
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    };
+    
+    // Enterキーでの検索
+    const keyHandler = (e) => {
+      if (e.key === 'Enter') {
+        searchHandler();
+      }
     };
     
     const clearHandler = () => {
-      searchInput.value = '';
-      showAllArticles();
+      showInitialState();
       window.history.replaceState({}, '', window.location.pathname);
     };
     
-    // 既存のリスナーを削除
-    searchInput.removeEventListener('input', inputHandler);
-    clearButton.removeEventListener('click', clearHandler);
+    // リアルタイム検索（デバウンス付き）
+    const realtimeSearchHandler = (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const query = e.target.value.trim();
+        if (query.length >= 2) {
+          // 2文字以上で検索実行
+          performSearch(query);
+          
+          // URLを更新
+          const newUrl = `${window.location.pathname}?q=${encodeURIComponent(query)}`;
+          window.history.replaceState({}, '', newUrl);
+        } else if (query.length === 0) {
+          // 空の場合は初期状態に戻す
+          showInitialState();
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+      }, 300); // 300ms遅延
+    };
     
-    // 新しいリスナーを追加
-    searchInput.addEventListener('input', inputHandler);
-    clearButton.addEventListener('click', clearHandler);
+    // イベントリスナーを追加
+    searchInput.addEventListener('input', realtimeSearchHandler);
+    searchButton.addEventListener('click', searchHandler);
+    searchInput.addEventListener('keydown', keyHandler);
+    if (clearButton) {
+      clearButton.addEventListener('click', clearHandler);
+    }
   }
 
   // 初期化を複数のイベントで実行
