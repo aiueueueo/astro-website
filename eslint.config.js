@@ -1,32 +1,33 @@
+import globals from 'globals';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 
 export default [
+  // 共通の除外設定
+  {
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      '.astro/**',
+      'public/**',
+      '*.min.js',
+      '**/*.config.js',
+    ],
+  },
+
   // JavaScript/JSX ファイルの設定
   {
     files: ['**/*.{js,jsx,mjs,cjs}'],
     languageOptions: {
-      ecmaVersion: 'latest',
+      ecmaVersion: 2024,
       sourceType: 'module',
       globals: {
-        console: 'readonly',
-        fetch: 'readonly',
-        Response: 'readonly',
-        URL: 'readonly',
-        location: 'readonly',
-        self: 'readonly',
-        caches: 'readonly',
-        document: 'readonly',
-        window: 'readonly',
-        navigator: 'readonly',
-        HTMLElement: 'readonly',
-        Event: 'readonly',
-        addEventListener: 'readonly',
-        removeEventListener: 'readonly',
+        ...globals.browser,
+        ...globals.node,
       },
     },
     rules: {
-      // 全てのルールを無効化
+      // ルールを最小限に設定
     },
   },
   
@@ -36,31 +37,20 @@ export default [
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
-        ecmaVersion: 'latest',
+        ecmaVersion: 2024,
         sourceType: 'module',
+        project: null, // tsconfig.json を参照しない
       },
       globals: {
-        console: 'readonly',
-        fetch: 'readonly',
-        Response: 'readonly',
-        URL: 'readonly',
-        location: 'readonly',
-        self: 'readonly',
-        caches: 'readonly',
-        document: 'readonly',
-        window: 'readonly',
-        navigator: 'readonly',
-        HTMLElement: 'readonly',
-        Event: 'readonly',
-        addEventListener: 'readonly',
-        removeEventListener: 'readonly',
+        ...globals.browser,
+        ...globals.node,
       },
     },
     plugins: {
       '@typescript-eslint': typescriptEslint,
     },
     rules: {
-      // TypeScript ルールを無効化
+      // TypeScript ルールを最小限に設定
     },
   },
 ]

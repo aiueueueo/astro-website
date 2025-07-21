@@ -8,7 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint .",
     "lint:astro": "echo 'Astro files are linted via astro check (see typecheck command)'",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
@@ -32,6 +32,7 @@
     "@typescript-eslint/parser": "^8.37.0",
     "eslint": "^9.31.0",
     "eslint-plugin-astro": "^1.3.1",
+    "globals": "^15.0.0",
     "typescript": "^5.8.3"
   }
 }
