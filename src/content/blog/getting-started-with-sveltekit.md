@@ -1,6 +1,5 @@
 ---
 title: 'Getting Started with SvelteKit'
-description: 'Learn how to build modern web applications with SvelteKit, the full-stack framework for Svelte.'
 pubDate: 2024-01-15
 heroImage: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=600&fit=crop'
 tags: ['SvelteKit', 'JavaScript', 'Web Development']
