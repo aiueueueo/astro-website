@@ -38,6 +38,9 @@ lerna-debug.log*
 # Cache
 .cache/
 
+# remark-link-card cache
+public/remark-link-card/
+
 # Temporary files
 .tmp/
 .temp/
