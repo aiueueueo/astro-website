@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['BIZ UDPGothic', 'Hiragino Sans', 'Yu Gothic', 'system-ui', 'sans-serif'],
       }
     },
   },
