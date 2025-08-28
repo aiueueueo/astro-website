@@ -101,8 +101,12 @@ const baseBtn = getButtonClasses('secondary', 'sm', false) + ' gap-1';
           e.preventDefault();
           const el = e.currentTarget;
           if (!(el instanceof HTMLElement)) return;
-          const title = el.getAttribute('data-share-title') || document.title;
-          const url = el.getAttribute('data-share-url') || location.href;
+          const title = el.getAttribute('data-share-title') || '';
+          const url = el.getAttribute('data-share-url') || '';
+          if (!url) {
+            alert('共有できるURLが見つかりません');
+            return;
+          }
 
           if (navigator.share) {
             try {
