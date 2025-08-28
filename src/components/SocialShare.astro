@@ -89,10 +89,10 @@ const baseBtn = getButtonClasses('secondary', 'sm', false) + ' gap-1';
   </button>
 </div>
 
-<script>
+<script is:inline>
   (function() {
     try {
-      const root = document.getElementById("{shareId}");
+      const root = document.getElementById("${shareId}");
       if (!root) return;
       const btn = root.querySelector('.js-native-share');
       if (!btn) return;
