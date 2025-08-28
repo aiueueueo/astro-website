@@ -63,7 +63,7 @@ const baseBtn = getButtonClasses('secondary', 'sm', false) + ' gap-1';
 
   <!-- はてなブックマーク -->
   <a
-    href={`https://b.hatena.ne.jp/entry/${encodedUrl}`}
+    href={`https://b.hatena.ne.jp/add?mode=confirm&url=${encodedUrl}&title=${encodedTitle}`}
     target="_blank"
     rel="noopener noreferrer"
     class={baseBtn}
