@@ -28,17 +28,19 @@ const getNavItemClasses = (href: string) => {
 const homeLinkClasses = getNavLinkClasses(
   currentPage, 
   'home',
-  'text-xl font-bold transition-colors',
-  'text-blue-600 dark:text-blue-400',
-  'text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400'
+  'text-xl font-bold transition-colors tracking-tight',
+  'text-retro-green dark:text-retro-green',
+  'text-gray-900 dark:text-retro-text hover:text-retro-green dark:hover:text-retro-green-hover'
 );
 ---
 
-<header class="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center h-16">
+<header class="fixed w-full top-0 z-50 transition-all duration-300" id="main-header">
+  <div class="absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60"></div>
+  
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="flex items-center justify-between h-16 md:h-20">
       <!-- Left: Mobile Menu + Blog Name -->
-      <div class="flex items-center flex-1">
+      <div class="flex items-center gap-4">
         <MobileMenu currentPage={currentPage} />
         
         <!-- Blog Name/Logo -->
@@ -51,9 +53,9 @@ const homeLinkClasses = getNavLinkClasses(
         </a>
       </div>
       
-      <!-- Center: Desktop Navigation -->
+      <!-- Center: Desktop Navigation (Empty for now but ready) -->
       <nav 
-        class="hidden md:flex items-center space-x-6 flex-1 justify-center"
+        class="hidden md:flex items-center space-x-8"
         aria-label="メインナビゲーション"
       >
         {navigationItems.map((item) => (
@@ -68,8 +70,9 @@ const homeLinkClasses = getNavLinkClasses(
       </nav>
       
       <!-- Right: Search, Theme Toggle & Social Links -->
-      <div class="flex items-center space-x-3 flex-1 justify-end">
+      <div class="flex items-center gap-3">
         <SearchBox />
+        <div class="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1"></div>
         <ThemeToggle />
         <SocialLinks />
       </div>
@@ -77,16 +80,17 @@ const homeLinkClasses = getNavLinkClasses(
   </div>
 </header>
 
+<!-- Spacer for fixed header -->
+<div class="h-16 md:h-20"></div>
+
 <style>
-  /* ヘッダーのスムーズな表示効果 */
-  header {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-  
   /* アクセシビリティ: フォーカス表示の改善 */
   nav a:focus {
     outline: 2px solid currentColor;
-    outline-offset: 2px;
+    outline-offset: 4px;
+    border-radius: 4px;
   }
+  
+  /* スクロール時のスタイル変更（必要に応じてJSでクラス付与） */
+  /* :global(.scrolled) header { ... } */
 </style>

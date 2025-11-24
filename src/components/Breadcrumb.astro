@@ -11,24 +11,22 @@ export interface Props {
 const { items } = Astro.props;
 ---
 
-<nav aria-label="パンくずリスト" class="mb-6">
-  <ol class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+<nav aria-label="パンくずリスト" class="mb-8">
+  <ol class="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 leading-none">
     {items.map((item, index) => (
-      <li class="flex items-center">
+      <li class="flex items-center my-1">
         {index > 0 && (
-          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
+          <span class="mx-3 text-gray-300 dark:text-gray-600 select-none">/</span>
         )}
         {item.href ? (
           <a 
             href={item.href} 
-            class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            class="hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             {item.label}
           </a>
         ) : (
-          <span class="text-gray-900 dark:text-white font-medium">
+          <span class="text-gray-900 dark:text-white font-medium" aria-current="page">
             {item.label}
           </span>
         )}

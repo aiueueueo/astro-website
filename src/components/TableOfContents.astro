@@ -17,10 +17,10 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
   <div class="toc-container">
     <div class="toc-sticky">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-retro-text">
           目次
         </h3>
-        <div class="text-xs text-gray-500 dark:text-gray-400">
+        <div class="text-xs text-gray-500 dark:text-retro-text/60">
           <span id="reading-progress">0%</span>
         </div>
       </div>
@@ -30,7 +30,7 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
         <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
           <div 
             id="progress-bar" 
-            class="bg-blue-600 dark:bg-blue-400 h-1.5 rounded-full transition-all duration-300 ease-out"
+            class="bg-retro-red dark:bg-retro-red h-1.5 rounded-full transition-all duration-300 ease-out"
             style="width: 0%"
           ></div>
         </div>
@@ -43,10 +43,10 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
               <a 
                 href={`#${heading.slug}`}
                 data-heading-id={heading.slug}
-                class={`block text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded px-3 py-2 border-l-2 border-transparent ${
+                class={`block text-sm hover:text-retro-green dark:hover:text-retro-green-hover transition-all duration-200 rounded px-3 py-2 border-l-2 border-transparent ${
                   heading.depth === 2 
-                    ? 'text-gray-700 dark:text-gray-300 font-medium' 
-                    : 'text-gray-600 dark:text-gray-400 ml-4'
+                    ? 'text-gray-700 dark:text-retro-text/90 font-medium' 
+                    : 'text-gray-600 dark:text-retro-text/70 ml-4'
                 }`}
               >
                 {heading.text}
@@ -220,7 +220,7 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 
 <style is:global>
   .toc-nav a.active {
-    @apply text-blue-600 dark:text-blue-400 font-semibold bg-blue-50 dark:bg-blue-900/20 border-l-blue-600 dark:border-l-blue-400;
+    @apply text-retro-red dark:text-retro-red font-semibold bg-retro-red/10 dark:bg-retro-red/10 border-l-retro-red dark:border-l-retro-red;
   }
   
   .toc-nav a:hover {

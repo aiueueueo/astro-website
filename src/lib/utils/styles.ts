@@ -18,8 +18,8 @@ export function getNavLinkClasses(
   currentPage: string,
   targetPage: string,
   baseClasses: string = UI_CONSTANTS.COMMON_STYLES.TRANSITION,
-  activeClasses: string = 'text-blue-600 dark:text-blue-400 font-medium',
-  inactiveClasses: string = 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
+  activeClasses: string = 'text-retro-green dark:text-retro-green font-medium',
+  inactiveClasses: string = 'text-gray-700 dark:text-retro-text/80 hover:text-retro-green dark:hover:text-retro-green'
 ): string {
   return classNames(
     baseClasses,
@@ -76,7 +76,7 @@ export function getTagClasses(
   // デフォルトの色
   return classNames(
     baseClasses,
-    'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+    'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-retro-text'
   );
 }
 
@@ -90,7 +90,7 @@ export function getDateBadgeClasses(
     'inline-flex items-center font-medium',
     UI_CONSTANTS.COMMON_STYLES.ROUNDED,
     UI_CONSTANTS.SIZES.DATE_BADGE[variant],
-    'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+    'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-retro-text'
   );
 }
 
