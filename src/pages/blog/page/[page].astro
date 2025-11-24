@@ -48,16 +48,18 @@ const blogArticles = paginatedPosts.map(transformBlogPost);
     />
     
     <!-- Page Title -->
-    <div class="mb-8">
-      <h1 class="text-4xl font-bold text-gray-900 dark:text-white">
+    <div class="mb-12 border-b border-gray-200 dark:border-gray-800 pb-4">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-retro-text">
         Blog
       </h1>
     </div>
 
     <!-- Blog Grid -->
-    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-12">
+    <div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3 mb-12">
       {blogArticles.map((article, index) => (
-        <ArticleCard {...article} compact={false} eager={index < 3} fromPage={page} />
+        <div class="group h-full">
+          <ArticleCard {...article} compact={false} eager={index < 3} fromPage={page} />
+        </div>
       ))}
     </div>
 

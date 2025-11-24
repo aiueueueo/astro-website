@@ -49,7 +49,7 @@ function formatDate(date: Date) {
     <div class="mb-6">
       <a 
         href="/blog/"
-        class="back-to-blog-link inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+        class="back-to-blog-link inline-flex items-center text-sm text-retro-green dark:text-retro-green hover:text-retro-green-hover dark:hover:text-retro-green-hover transition-colors"
       >
         ← すべての記事に戻る
       </a>
@@ -75,11 +75,11 @@ function formatDate(date: Date) {
       <!-- Article Header -->
       <header>
         
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 text-left">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-retro-text mb-4 text-left">
           {post.data.title}
         </h1>
         
-        <div class="flex items-center justify-start gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <div class="flex items-center justify-start gap-4 text-sm text-gray-600 dark:text-retro-text/80 mb-4">
           <span>
             作成日: <time datetime={post.data.pubDate.toISOString()}>
               {formatDate(post.data.pubDate)}
@@ -100,7 +100,7 @@ function formatDate(date: Date) {
             {post.data.tags.map((tag) => (
               <a 
                 href={`/search?q=${encodeURIComponent(tag)}`}
-                class="inline-block px-3 py-1 text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                class="inline-block px-3 py-1 text-sm bg-retro-green/10 dark:bg-retro-green/20 text-retro-green dark:text-retro-green rounded-full hover:bg-retro-green/20 dark:hover:bg-retro-green/30 transition-colors"
               >
                 #{tag}
               </a>
@@ -134,7 +134,7 @@ function formatDate(date: Date) {
     <!-- Social Share Section -->
     <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
       <div class="text-right">
-        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">この記事をシェア</p>
+        <p class="text-sm text-gray-600 dark:text-retro-text/70 mb-4">この記事をシェア</p>
         <div class="flex justify-end">
           <SocialShare 
             title={post.data.title}
@@ -154,7 +154,7 @@ function formatDate(date: Date) {
       <div class="flex justify-center">
         <a 
           href="/blog/"
-          class="back-to-blog-link inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+          class="back-to-blog-link inline-flex items-center text-retro-green dark:text-retro-green hover:text-retro-green-hover dark:hover:text-retro-green-hover transition-colors"
         >
           ← すべての記事に戻る
         </a>
@@ -190,7 +190,7 @@ function formatDate(date: Date) {
   }
   
   .prose :global(code) {
-    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-1 py-0.5 rounded text-sm;
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-retro-text px-1 py-0.5 rounded text-sm;
   }
   
   .prose :global(pre code) {
@@ -199,39 +199,39 @@ function formatDate(date: Date) {
   
   /* 見出しデザイン */
   .prose :global(h1) {
-    @apply text-3xl font-bold text-gray-900 dark:text-gray-100 mt-8 mb-4 pb-2 border-b-2 border-blue-600;
+    @apply text-3xl font-bold text-gray-900 dark:text-retro-text mt-8 mb-4 pb-2 border-b-2 border-retro-red;
   }
   
   .prose :global(h2) {
-    @apply text-2xl font-semibold text-gray-900 dark:text-gray-100 mt-8 mb-4 pb-2 border-b border-gray-300 dark:border-gray-600;
+    @apply text-2xl font-semibold text-gray-900 dark:text-retro-text mt-8 mb-4 pb-2 border-b border-gray-300 dark:border-gray-600;
   }
   
   .prose :global(h3) {
-    @apply text-xl font-semibold text-gray-800 dark:text-gray-200 mt-6 mb-3 pl-4 border-l-4 border-gray-400 dark:border-gray-500;
+    @apply text-xl font-semibold text-gray-800 dark:text-retro-text mt-6 mb-3 pl-4 border-l-4 border-gray-400 dark:border-gray-500;
   }
   
   .prose :global(h4) {
-    @apply text-lg font-medium text-gray-800 dark:text-gray-200 mt-6 mb-3;
+    @apply text-lg font-medium text-gray-800 dark:text-retro-text mt-6 mb-3;
   }
   
   .prose :global(h5) {
-    @apply text-base font-medium text-gray-700 dark:text-gray-300 mt-4 mb-2;
+    @apply text-base font-medium text-gray-700 dark:text-retro-text mt-4 mb-2;
   }
   
   .prose :global(h6) {
-    @apply text-sm font-medium text-gray-600 dark:text-gray-400 mt-4 mb-2;
+    @apply text-sm font-medium text-gray-600 dark:text-retro-text/80 mt-4 mb-2;
   }
 
   /* ダークモード対応 */
   :global(.dark) .prose {
-    @apply text-gray-300;
+    @apply text-retro-text;
   }
   
   :global(.dark) .prose :global(a) {
-    @apply text-blue-400 hover:text-blue-300;
+    @apply text-retro-green hover:text-retro-green-hover;
   }
   
   :global(.dark) .prose :global(blockquote) {
-    @apply border-gray-600 text-gray-400;
+    @apply border-gray-600 text-retro-text/80;
   }
 </style>

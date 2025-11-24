@@ -50,12 +50,12 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
     {currentPage > 1 ? (
       <a 
         href={currentPage === 2 ? baseUrl : `${baseUrl}/page/${currentPage - 1}`}
-        class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        class="px-3 py-1 text-sm bg-retro-green text-white rounded-lg hover:bg-retro-green-hover transition-colors"
       >
         ＜
       </a>
     ) : (
-      <span class="px-3 py-1 text-sm bg-gray-300 text-gray-500 rounded cursor-not-allowed">
+      <span class="px-3 py-1 text-sm bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed dark:bg-gray-800 dark:text-gray-600">
         ＜
       </span>
     )}
@@ -66,7 +66,7 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
         page === '...' ? (
           <span class="px-2 text-sm text-gray-500">...</span>
         ) : page === currentPage ? (
-          <span class="px-3 py-1 text-sm bg-blue-600 text-white rounded">
+          <span class="px-3 py-1 text-sm bg-retro-green text-white rounded-lg shadow-sm">
             {page}
           </span>
         ) : (
@@ -84,12 +84,12 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
     {currentPage < totalPages ? (
       <a 
         href={`${baseUrl}/page/${currentPage + 1}`}
-        class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        class="px-3 py-1 text-sm bg-retro-green text-white rounded-lg hover:bg-retro-green-hover transition-colors"
       >
         ＞
       </a>
     ) : (
-      <span class="px-3 py-1 text-sm bg-gray-300 text-gray-500 rounded cursor-not-allowed">
+      <span class="px-3 py-1 text-sm bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed dark:bg-gray-800 dark:text-gray-600">
         ＞
       </span>
     )}

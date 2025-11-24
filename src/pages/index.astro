@@ -5,7 +5,7 @@ import Footer from '../components/layout/Footer.astro';
 import ArticleCard from '../components/blog/ArticleCard.astro';
 import InstallPrompt from '../components/InstallPrompt.astro';
 import { getCollection } from 'astro:content';
-import { BLOG_CONFIG, SITE_CONFIG } from '../lib/constants';
+import { SITE_CONFIG } from '../lib/constants';
 import StructuredData from '../components/StructuredData.astro';
 
 // Markdownファイルから記事を取得
@@ -13,7 +13,7 @@ const allPosts = await getCollection('blog');
 const articles = allPosts
   .filter(post => !post.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, BLOG_CONFIG.PAGINATION.HOMEPAGE_POSTS) // 最新記事を表示
+  .slice(0, 5) // 最新5件のみ取得
   .map(post => ({
     title: post.data.title,
     description: post.data.description,
@@ -22,7 +22,6 @@ const articles = allPosts
     date: post.data.pubDate.toISOString().split('T')[0],
     slug: post.slug
   }));
-
 ---
 
 <Layout title="Home - aiueueue's blog">
@@ -34,75 +33,67 @@ const articles = allPosts
   />
   <Header />
   
-  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Blog Header Section -->
-    <section class="mb-12">
-      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
-        <div class="flex flex-col lg:flex-row items-center gap-8">
-        <!-- Left: Text Content -->
-        <div class="flex-1 text-center lg:text-left">
-          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            aiueueue's blog
-          </h1>
-          <p class="text-lg text-gray-600 dark:text-gray-400 lg:max-w-lg">
-            Web開発、プログラミング、テクノロジーに関する学びと発見を共有するブログです
-          </p>
-        </div>
-        
-        <!-- Right: Profile/Hero Image -->
-        <div class="flex-shrink-0">
-          <div class="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-purple-600 p-1">
-            <div class="w-full h-full rounded-full overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center">
-              <img 
-                src="/profile.png"
-                alt="aiueueue's profile"
-                class="w-full h-full object-cover rounded-full"
-                loading="eager"
-              />
-            </div>
-          </div>
-        </div>
-        </div>
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <!-- 1. Simple Profile Section -->
+    <section class="flex flex-col items-center text-center mb-16 animate-fade-in">
+      <div class="w-32 h-32 rounded-full overflow-hidden ring-4 ring-gray-100 dark:ring-gray-800 shadow-lg mb-6">
+        <img 
+          src="/profile.png"
+          alt="aiueueue's profile"
+          class="w-full h-full object-cover"
+          loading="eager"
+        />
       </div>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-retro-text mb-3 tracking-tight">
+        aiueueue's blog
+      </h1>
+      <p class="text-gray-600 dark:text-retro-text/80 text-lg leading-relaxed max-w-lg">
+        Web開発、プログラミング、テクノロジーに関する<br class="hidden sm:block" />
+        学びと発見を共有するブログです。
+      </p>
     </section>
 
-    <!-- Latest Articles Section -->
-    <section class="mb-12">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
+    <!-- 2. Latest Articles List -->
+    <section class="mb-16">
+      <div class="flex items-center justify-between mb-8 border-b border-gray-200 dark:border-gray-800 pb-4">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-retro-text">
           Latest Articles
         </h2>
         <a 
           href="/blog" 
-          class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors font-medium text-sm gap-1"
+          class="text-sm font-medium text-retro-red dark:text-retro-red hover:text-retro-red-hover dark:hover:text-retro-red-hover transition-colors"
         >
-          もっと見る
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
+          View All
         </a>
       </div>
       
-      <div class="space-y-4">
-        {articles.map((article, index) => (
-          <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg dark:hover:shadow-gray-900/20 transition-all duration-300 ease-out p-4 hover:translate-y-[-2px] hover:border-blue-300 dark:hover:border-blue-600/50 group">
-            <ArticleCard 
-              title={article.title}
-              description={article.description}
-              image={article.image}
-              tags={article.tags}
-              date={article.date}
-              slug={article.slug}
-              compact={true}
-              eager={index === 0}
-            />
+      <div class="space-y-6">
+        {articles.map((article) => (
+          <div class="group">
+             <!-- compact=true を使ってリスト風に見せる -->
+             <ArticleCard 
+               {...article} 
+               compact={true} 
+             />
           </div>
         ))}
       </div>
     </section>
-    
+
   </main>
   
   <Footer />
   <InstallPrompt />
 </Layout>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+  }
+</style>

@@ -8,19 +8,14 @@ const currentYear = new Date().getFullYear();
 const copyrightText = SITE_CONFIG.COPYRIGHT.replace('2024', currentYear.toString());
 ---
 
-<footer class="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-800 mt-16">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-      <div class="text-sm text-gray-600 dark:text-gray-400">
-        {copyrightText}
-      </div>
-      
-      <div class="flex items-center space-x-6">
-        <div class="text-xs text-gray-500 dark:text-gray-500">
-          Built with <a href="https://astro.build" class="hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Astro</a>
-        </div>
-      </div>
+<footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-auto">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row justify-center items-center gap-4 text-sm text-gray-500 dark:text-retro-text/60">
+      <span>{copyrightText}</span>
+      <span class="hidden md:inline text-gray-300 dark:text-retro-text/40">•</span>
+      <span>
+        Built with <a href="https://astro.build" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">Astro</a>
+      </span>
     </div>
   </div>
 </footer>
-

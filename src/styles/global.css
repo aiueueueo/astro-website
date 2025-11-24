@@ -12,14 +12,25 @@
   }
   
   html {
-    font-family: 'BIZ UDPGothic', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
+    font-family: 'BIZ UDPGothic', 'Hiragino Sans', 'Yu Gothic', 'system-ui', 'sans-serif';
     scroll-behavior: smooth;
-    @apply bg-gray-100 dark:bg-gray-900;
+    
+    /* Dot Pattern Background */
+    background-color: #f3f4f6;
+    background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  html.dark {
+    background-color: #222222; /* Retro Dark Gray */
+    /* background-image: none; シンプルにするためドットパターンは一旦削除、必要なら再開 */
+    background-image: radial-gradient(#333334 1px, transparent 1px); /* 馴染むドット */
   }
   
   body {
-    @apply bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200;
-    font-family: 'BIZ UDPGothic', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
+    @apply text-gray-900 dark:text-retro-text transition-colors duration-200;
+    background-color: transparent;
+    font-family: 'BIZ UDPGothic', 'Hiragino Sans', 'Yu Gothic', 'system-ui', 'sans-serif';
     font-feature-settings: 'rlig' 1, 'calt' 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -29,8 +40,8 @@
 
 @layer components {
   .prose {
-    @apply max-w-none text-gray-700 dark:text-gray-300;
-    font-family: 'BIZ UDPGothic', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
+    @apply max-w-none text-gray-700 dark:text-retro-text;
+    font-family: 'BIZ UDPGothic', 'Hiragino Sans', 'Yu Gothic', 'system-ui', 'sans-serif';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-weight: 400;
@@ -38,11 +49,11 @@
   }
   
   .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-    @apply text-gray-900 dark:text-gray-100 font-semibold;
+    @apply text-gray-900 dark:text-retro-text font-semibold;
   }
   
   .prose a {
-    @apply text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 no-underline;
+    @apply text-retro-green dark:text-retro-green hover:text-retro-green-hover dark:hover:text-retro-green-hover no-underline;
   }
   
   .prose code {
@@ -78,7 +89,7 @@
 html.dark,
 html.dark ::view-transition-old(root),
 html.dark ::view-transition-new(root) {
-  background-color: #111827 !important;
+  background-color: #222222 !important;
 }
 
 html:not(.dark),
