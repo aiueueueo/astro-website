@@ -33,13 +33,13 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
   <article class="group h-full">
     <a 
       href={articleUrl} 
-      class="block h-full rounded-lg hover:bg-gray-50 dark:hover:bg-retro-green/5 transition-colors duration-300"
+      class="block h-full rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-300"
       aria-label={`記事「${title}」を読む`}
       tabindex="0"
     >
       <div class="flex gap-4 items-center h-full p-2">
         <!-- 記事画像 -->
-        <div class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
+        <div class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-200 dark:bg-white/5">
           <img 
             src={image} 
             alt={title}
@@ -79,7 +79,7 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
   </article>
 ) : (
   <!-- Grid layout for blog page -->
-  <article class="group h-full bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700/50 flex flex-col hover:border-gray-300 dark:hover:border-gray-600 transition-colors duration-300">
+  <article class="group h-full bg-white dark:bg-[#2a2a2a] rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-white/5 flex flex-col hover:border-gray-300 dark:hover:border-white/20 transition-colors duration-300">
     <a 
       href={articleUrl} 
       class="block flex-1 flex flex-col group"
@@ -87,7 +87,7 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
       tabindex="0"
     >
       <!-- 記事画像 -->
-      <div class="aspect-[16/9] overflow-hidden relative bg-gray-100 dark:bg-gray-800 group-hover:opacity-90 transition-opacity">
+      <div class="aspect-[16/9] overflow-hidden relative bg-gray-100 dark:bg-white/5 group-hover:opacity-90 transition-opacity">
         <img 
           src={image} 
           alt={title}
@@ -120,7 +120,7 @@ const displayTags = compact ? tags.slice(0, 2) : tags;
               variant="default"
               size="sm"
               interactive={false}
-              class="bg-gray-50 dark:bg-gray-700/50 border-transparent"
+              class="bg-gray-50 dark:bg-white/5 border-transparent"
             />
           ))}
         </div>

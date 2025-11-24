@@ -27,9 +27,9 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
       
       <!-- 進捗バー -->
       <div class="mb-4">
-        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+        <div class="w-full bg-gray-200 dark:bg-white/10 rounded-full h-1.5">
           <div 
-            id="progress-bar" 
+            id="progress-bar"  
             class="bg-retro-red dark:bg-retro-red h-1.5 rounded-full transition-all duration-300 ease-out"
             style="width: 0%"
           ></div>
@@ -66,7 +66,7 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
   }
   
   .toc-sticky {
-    @apply bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm;
+    @apply bg-white dark:bg-[#2a2a2a] p-4 rounded-lg border border-gray-200 dark:border-white/5 shadow-sm;
     max-height: calc(100vh - 8rem);
     overflow-y: auto;
   }

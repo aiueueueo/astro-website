@@ -17,8 +17,8 @@ export const UI_CONSTANTS = {
     
     BUTTON_VARIANTS: {
       primary: 'bg-retro-green text-white hover:bg-retro-green-hover focus:ring-retro-green',
-      secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600',
-      ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-gray-500 dark:text-gray-300 dark:hover:bg-gray-800'
+      secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500 dark:bg-white/10 dark:text-retro-text/80 dark:hover:bg-white/20',
+      ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-gray-500 dark:text-retro-text/80 dark:hover:bg-white/10'
     }
   },
   
