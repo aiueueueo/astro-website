@@ -20,33 +20,19 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
         <h3 class="text-lg font-semibold text-gray-900 dark:text-retro-text">
           目次
         </h3>
-        <div class="text-xs text-gray-500 dark:text-retro-text/60">
-          <span id="reading-progress">0%</span>
-        </div>
-      </div>
-      
-      <!-- 進捗バー -->
-      <div class="mb-4">
-        <div class="w-full bg-gray-200 dark:bg-white/10 rounded-full h-1.5">
-          <div 
-            id="progress-bar"  
-            class="bg-retro-red dark:bg-retro-red h-1.5 rounded-full transition-all duration-300 ease-out"
-            style="width: 0%"
-          ></div>
-        </div>
       </div>
       
       <nav class="toc-nav">
-        <ul class="space-y-1">
+        <ul class="relative border-l border-gray-200 dark:border-white/10 ml-2">
           {filteredHeadings.map((heading) => (
             <li>
               <a 
                 href={`#${heading.slug}`}
                 data-heading-id={heading.slug}
-                class={`block text-sm hover:text-retro-green dark:hover:text-retro-green-hover transition-all duration-200 rounded px-3 py-2 border-l-2 border-transparent ${
+                class={`toc-link block text-sm py-1.5 transition-colors duration-200 relative leading-snug ${
                   heading.depth === 2 
-                    ? 'text-gray-700 dark:text-retro-text/90 font-medium' 
-                    : 'text-gray-600 dark:text-retro-text/70 ml-4'
+                    ? 'pl-4 text-gray-600 dark:text-retro-text/80' 
+                    : 'pl-8 text-gray-500 dark:text-retro-text/60 text-xs'
                 }`}
               >
                 {heading.text}
@@ -77,11 +63,30 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
   
   .toc-nav a {
     @apply no-underline;
-    line-height: 1.4;
   }
   
-  .toc-nav a:hover {
-    @apply underline;
+  /* ドット（丸）のデザイン */
+  .toc-link::before {
+    content: '';
+    position: absolute;
+    left: -4px; /* 棒の中心に合わせるための調整 */
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    @apply bg-gray-300 dark:bg-white/20;
+    transition: all 0.2s ease;
+    z-index: 1;
+  }
+
+  /* ホバー時のスタイル */
+  .toc-link:hover {
+    @apply text-retro-green dark:text-retro-green-hover;
+  }
+  
+  .toc-link:hover::before {
+    @apply bg-retro-green dark:bg-retro-green-hover;
   }
   
   /* モバイルでは非表示 */
@@ -94,56 +99,17 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 
 <script>
   let scrollHandler = null;
-  let resizeHandler = null;
   
   function initTableOfContents() {
     // 既存のイベントリスナーをクリーンアップ
     if (scrollHandler) {
       window.removeEventListener('scroll', scrollHandler);
     }
-    if (resizeHandler) {
-      window.removeEventListener('resize', resizeHandler);
-    }
     
-    const progressBar = document.getElementById('progress-bar');
-    const progressText = document.getElementById('reading-progress');
     const tocLinks = document.querySelectorAll('.toc-nav a');
     const headings = document.querySelectorAll('article h2, article h3');
     
-    if (!progressBar || !progressText || !headings.length) return;
-
-    function updateProgress() {
-      // 記事の進捗計算
-      const article = document.querySelector('article');
-      if (!article) return;
-      
-      const articleRect = article.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      const documentHeight = article.offsetHeight;
-      
-      // 記事が短い場合の処理
-      if (documentHeight <= windowHeight) {
-        // 記事全体が画面に収まる場合は100%とする
-        progressBar.style.width = '100%';
-        progressText.textContent = '100%';
-        return;
-      }
-      
-      // 記事の上端がビューポートの上部に達したときから計算開始
-      const scrolled = Math.max(0, -articleRect.top);
-      const maxScroll = Math.max(1, documentHeight - windowHeight + 100); // 100px余裕、最小値1で除算エラー防止
-      
-      let progress = (scrolled / maxScroll) * 100;
-      
-      // NaN チェックと範囲制限
-      if (isNaN(progress) || !isFinite(progress)) {
-        progress = 0;
-      }
-      progress = Math.min(100, Math.max(0, progress));
-      
-      progressBar.style.width = `${progress}%`;
-      progressText.textContent = `${Math.round(progress)}%`;
-    }
+    if (!headings.length) return;
 
     function updateActiveHeading() {
       let activeHeading = null;
@@ -174,7 +140,6 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
     }
 
     function handleScroll() {
-      updateProgress();
       updateActiveHeading();
     }
 
@@ -197,11 +162,9 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 
     // イベントハンドラーを保存
     scrollHandler = handleScroll;
-    resizeHandler = updateProgress;
     
     // イベントリスナー設定
     window.addEventListener('scroll', scrollHandler, { passive: true });
-    window.addEventListener('resize', resizeHandler, { passive: true });
     
     // 初期化実行
     handleScroll();
@@ -219,11 +182,19 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 </script>
 
 <style is:global>
+  /* アクティブなリンクのスタイル（文字色のみ強調） */
   .toc-nav a.active {
-    @apply text-retro-red dark:text-retro-red font-semibold bg-retro-red/10 dark:bg-retro-red/10 border-l-retro-red dark:border-l-retro-red;
+    @apply text-retro-red dark:text-retro-red font-semibold bg-transparent border-none !important;
   }
   
+  /* アクティブなドットのスタイル（色変更のみ） */
+  .toc-nav a.active::before {
+    @apply bg-retro-red dark:bg-retro-red !important;
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+  
+  /* 以前のホバー背景色を無効化 */
   .toc-nav a:hover {
-    @apply bg-gray-50 dark:bg-gray-700/50;
+    background-color: transparent !important;
   }
 </style>
