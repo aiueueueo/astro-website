@@ -33,7 +33,7 @@ const socialImage = image ? new URL(image, Astro.site) : new URL('/og-image.jpg'
 				const root = document.documentElement;
 				
 				root.classList.toggle('dark', isDark);
-				root.style.backgroundColor = isDark ? '#111827' : '#f3f4f6';
+				root.style.backgroundColor = isDark ? '#222222' : '#e7e5e4';
 				root.style.colorScheme = isDark ? 'dark' : 'light';
 			};
 			
@@ -41,7 +41,7 @@ const socialImage = image ? new URL(image, Astro.site) : new URL('/og-image.jpg'
 			
 			// 軽量化されたナビゲーション処理
 			document.addEventListener('astro:before-swap', (e) => {
-				const bgColor = document.documentElement.classList.contains('dark') ? '#111827' : '#f3f4f6';
+				const bgColor = document.documentElement.classList.contains('dark') ? '#222222' : '#e7e5e4';
 				document.documentElement.style.backgroundColor = bgColor;
 				if (e.newDocument) e.newDocument.documentElement.style.backgroundColor = bgColor;
 			});
@@ -54,11 +54,11 @@ const socialImage = image ? new URL(image, Astro.site) : new URL('/og-image.jpg'
 				transition: none !important;
 			}
 			html.dark {
-				background-color: #111827 !important;
+				background-color: #222222 !important;
 				color-scheme: dark;
 			}
 			html:not(.dark) {
-				background-color: #f3f4f6 !important;
+				background-color: #e7e5e4 !important;
 				color-scheme: light;
 			}
 			/* Prevent flash during navigation */
@@ -66,10 +66,10 @@ const socialImage = image ? new URL(image, Astro.site) : new URL('/og-image.jpg'
 				background-color: inherit !important;
 			}
 			html.dark, html.dark body {
-				background-color: #111827 !important;
+				background-color: #222222 !important;
 			}
 			html:not(.dark), html:not(.dark) body {
-				background-color: #f3f4f6 !important;
+				background-color: #e7e5e4 !important;
 			}
 		</style>
 		

@@ -76,7 +76,7 @@ export function getTagClasses(
   // デフォルトの色
   return classNames(
     baseClasses,
-    'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-retro-text'
+    'bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-retro-text'
   );
 }
 
@@ -90,7 +90,7 @@ export function getDateBadgeClasses(
     'inline-flex items-center font-medium',
     UI_CONSTANTS.COMMON_STYLES.ROUNDED,
     UI_CONSTANTS.SIZES.DATE_BADGE[variant],
-    'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-retro-text'
+    'bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-retro-text'
   );
 }
 
