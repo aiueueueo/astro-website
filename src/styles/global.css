@@ -40,7 +40,7 @@
 
 @layer components {
   .prose {
-    @apply max-w-none text-stone-700 dark:text-retro-text;
+    @apply max-w-none text-[15px] text-stone-700 dark:text-retro-text;
     font-family: 'BIZ UDPGothic', 'Hiragino Sans', 'Yu Gothic', 'system-ui', 'sans-serif';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

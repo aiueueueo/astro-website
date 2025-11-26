@@ -62,9 +62,6 @@ const hasHighRelevance = relatedPosts.some(post => post.score > 0);
       >
         関連記事
       </h2>
-      <p class="text-sm text-gray-600 dark:text-gray-400">
-        この記事と関連性の高い記事をご紹介します
-      </p>
     </div>
     
     <!-- 関連記事グリッド -->
@@ -112,25 +109,6 @@ const hasHighRelevance = relatedPosts.some(post => post.score > 0);
             </p>
           </div>
         </div>
-      </div>
-    )}
-    
-    <!-- 関連度の説明 -->
-    {hasHighRelevance && (
-      <div class="mt-6 text-center">
-        <details class="inline-block text-left">
-          <summary class="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-            関連度の計算方法
-          </summary>
-          <div class="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-600 dark:text-gray-400 max-w-md">
-            <p class="mb-2">関連記事は以下の要素で計算されています：</p>
-            <ul class="space-y-1 text-xs">
-              <li>• 共通タグ数（主要指標）</li>
-              <li>• タグの希少性（レアなタグほど高評価）</li>
-              <li>• 公開日の近さ（新しい記事を優先）</li>
-            </ul>
-          </div>
-        </details>
       </div>
     )}
   </section>

@@ -401,11 +401,12 @@ const articles = publishedPosts.map(post => ({
       // 日付テキスト
       const timeElement = document.createElement('time');
       timeElement.setAttribute('datetime', article.date);
-      timeElement.textContent = new Date(article.date).toLocaleDateString('ja-JP', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+      
+      const dateObj = new Date(article.date);
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      timeElement.textContent = `${year}/${month}/${day}`;
       
       dateDiv.appendChild(calendarIcon);
       dateDiv.appendChild(timeElement);
