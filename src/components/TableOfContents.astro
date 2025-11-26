@@ -23,7 +23,7 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
       </div>
       
       <nav class="toc-nav">
-        <ul class="relative border-l border-gray-200 dark:border-white/10 ml-2">
+        <ul class="relative border-l-2 border-gray-200 dark:border-white/10 ml-2">
           {filteredHeadings.map((heading) => (
             <li>
               <a 
@@ -65,18 +65,20 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
     @apply no-underline;
   }
   
-  /* ドット（丸）のデザイン */
+  /* ドット（丸）のデザイン - 非アクティブ時 */
   .toc-link::before {
     content: '';
     position: absolute;
-    left: -4px; /* 棒の中心に合わせるための調整 */
+    /* ボーダー(2px)の中心に合わせる */
+    left: -1px;
     top: 50%;
+    /* 中心基準で配置することでズレを防ぐ */
     transform: translate(-50%, -50%);
     width: 6px;
     height: 6px;
     border-radius: 50%;
     @apply bg-gray-300 dark:bg-white/20;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1;
   }
 
@@ -87,6 +89,7 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
   
   .toc-link:hover::before {
     @apply bg-retro-green dark:bg-retro-green-hover;
+    transform: translate(-50%, -50%) scale(1.2);
   }
   
   /* モバイルでは非表示 */
@@ -187,10 +190,13 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
     @apply text-retro-red dark:text-retro-red font-semibold bg-transparent border-none !important;
   }
   
-  /* アクティブなドットのスタイル（色変更のみ） */
+  /* アクティブなマーカー（ダイヤモンド型） */
   .toc-nav a.active::before {
     @apply bg-retro-red dark:bg-retro-red !important;
-    transform: translate(-50%, -50%) scale(1.3);
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 1px !important;
+    transform: translate(-50%, -50%) rotate(45deg) !important;
   }
   
   /* 以前のホバー背景色を無効化 */
