@@ -12,23 +12,32 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 ---
 
 {filteredHeadings.length > 0 && (
-  <div class="mb-6">
-    <details class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-      <summary class="p-4 cursor-pointer font-medium text-gray-900 dark:text-retro-text hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-        目次 ({filteredHeadings.length}項目)
+  <div class="mb-8">
+    <details class="group bg-white dark:bg-[#2a2a2a] rounded-lg border border-gray-200 dark:border-white/5 shadow-sm">
+      <summary class="flex items-center justify-between p-4 cursor-pointer font-semibold text-gray-900 dark:text-retro-text select-none transition-colors focus:outline-none">
+        <div class="flex items-center">
+          <span>目次</span>
+        </div>
+        <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-open:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
       </summary>
-      <nav class="px-4 pb-4">
-        <ul class="space-y-2">
+      
+      <nav class="px-4 pb-5 pt-1 border-t border-gray-100 dark:border-white/5">
+        <ul class="mt-3 space-y-1">
           {filteredHeadings.map((heading) => (
             <li>
               <a 
                 href={`#${heading.slug}`} 
-                class="block py-2 text-sm text-gray-600 dark:text-retro-text/80 hover:text-retro-green dark:hover:text-retro-green transition-colors"
+                class={`block py-2 transition-colors duration-200 leading-snug border-b border-gray-100 dark:border-white/5 last:border-0
+                  ${heading.depth === 2 
+                    ? 'text-sm text-gray-700 dark:text-retro-text/90 font-medium pl-1' 
+                    : 'text-xs text-gray-600 dark:text-retro-text/70 pl-4'
+                  }
+                `}
                 onclick="this.closest('details').removeAttribute('open')"
               >
-                <span class={heading.depth === 3 ? 'ml-4' : ''}>
-                  {heading.text}
-                </span>
+                {heading.text}
               </a>
             </li>
           ))}
@@ -37,3 +46,15 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
     </details>
   </div>
 )}
+
+<style>
+  /* タップ/ホバー時のスタイル */
+  a:active {
+    @apply text-retro-green dark:text-retro-green-hover bg-gray-50 dark:bg-white/5;
+  }
+  
+  /* Safariでのdetailsのマーカーを消す */
+  summary::-webkit-details-marker {
+    display: none;
+  }
+</style>
