@@ -27,11 +27,10 @@ const { Content, headings } = await post.render();
 // クライアントサイドで処理する
 
 function formatDate(date: Date) {
-  return date.toLocaleDateString('ja-JP', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}/${month}/${day}`;
 }
 ---
 
@@ -75,13 +74,13 @@ function formatDate(date: Date) {
       <!-- Article Header -->
       <header>
         
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-retro-text mb-4 text-left">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-retro-text mb-4 text-left">
           {post.data.title}
         </h1>
         
-        <div class="flex items-center justify-start gap-4 text-sm text-gray-600 dark:text-retro-text/80 mb-4">
+        <div class="flex items-center justify-start gap-4 text-xs md:text-sm text-gray-600 dark:text-retro-text/80 mb-4">
           <span>
-            作成日: <time datetime={post.data.pubDate.toISOString()}>
+            <time datetime={post.data.pubDate.toISOString()}>
               {formatDate(post.data.pubDate)}
             </time>
           </span>
@@ -100,7 +99,7 @@ function formatDate(date: Date) {
             {post.data.tags.map((tag) => (
               <a 
                 href={`/search?q=${encodeURIComponent(tag)}`}
-                class="inline-block px-3 py-1 text-sm bg-retro-green/10 dark:bg-retro-green/20 text-retro-green dark:text-retro-green rounded-full hover:bg-retro-green/20 dark:hover:bg-retro-green/30 transition-colors"
+                class="inline-block px-3 py-1 text-xs bg-retro-green/10 dark:bg-retro-green/20 text-retro-green dark:text-retro-green rounded-full hover:bg-retro-green/20 dark:hover:bg-retro-green/30 transition-colors"
               >
                 #{tag}
               </a>
@@ -119,8 +118,8 @@ function formatDate(date: Date) {
     <!-- Content with Desktop TOC -->
     <div class="flex gap-8 items-start">
       <!-- Article Content -->
-      <article class="flex-1 prose prose-lg max-w-none min-w-0">
-        <div class="prose dark:prose-invert max-w-none leading-relaxed">
+      <article class="flex-1 prose max-w-3xl mx-auto min-w-0">
+        <div class="prose dark:prose-invert max-w-full leading-relaxed">
           <Content />
         </div>
       </article>
@@ -199,27 +198,27 @@ function formatDate(date: Date) {
   
   /* 見出しデザイン */
   .prose :global(h1) {
-    @apply text-3xl font-bold text-gray-900 dark:text-retro-text mt-8 mb-4 pb-2 border-b-2 border-retro-red;
+    @apply text-2xl font-bold text-gray-900 dark:text-retro-text mt-8 mb-4 pb-2 border-b-2 border-retro-red;
   }
   
   .prose :global(h2) {
-    @apply text-2xl font-semibold text-gray-900 dark:text-retro-text mt-8 mb-4 pb-2 border-b border-gray-300 dark:border-gray-600;
+    @apply text-xl font-semibold text-gray-900 dark:text-retro-text mt-8 mb-4 pb-2 border-b border-gray-300 dark:border-gray-600;
   }
   
   .prose :global(h3) {
-    @apply text-xl font-semibold text-gray-800 dark:text-retro-text mt-6 mb-3 pl-4 border-l-4 border-gray-400 dark:border-gray-500;
+    @apply text-lg font-semibold text-gray-800 dark:text-retro-text mt-6 mb-3 pl-4 border-l-4 border-gray-400 dark:border-gray-500;
   }
   
   .prose :global(h4) {
-    @apply text-lg font-medium text-gray-800 dark:text-retro-text mt-6 mb-3;
+    @apply text-base font-medium text-gray-800 dark:text-retro-text mt-6 mb-3;
   }
   
   .prose :global(h5) {
-    @apply text-base font-medium text-gray-700 dark:text-retro-text mt-4 mb-2;
+    @apply text-sm font-medium text-gray-700 dark:text-retro-text mt-4 mb-2;
   }
   
   .prose :global(h6) {
-    @apply text-sm font-medium text-gray-600 dark:text-retro-text/80 mt-4 mb-2;
+    @apply text-xs font-medium text-gray-600 dark:text-retro-text/80 mt-4 mb-2;
   }
 
   /* ダークモード対応 */
