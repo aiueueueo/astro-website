@@ -16,8 +16,8 @@
     scroll-behavior: smooth;
     
     /* Dot Pattern Background */
-    background-color: #e7e5e4;
-    background-image: radial-gradient(#d6d3d1 1px, transparent 1px);
+    background-color: #eeebea;
+    background-image: radial-gradient(#dddbda 1px, transparent 1px);
     background-size: 24px 24px;
   }
 
@@ -95,5 +95,5 @@ html.dark ::view-transition-new(root) {
 html:not(.dark),
 html:not(.dark) ::view-transition-old(root),
 html:not(.dark) ::view-transition-new(root) {
-  background-color: #e7e5e4 !important;
+  background-color: #eeebea !important;
 }
