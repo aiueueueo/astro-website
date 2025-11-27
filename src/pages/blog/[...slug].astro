@@ -8,6 +8,8 @@ import TableOfContents from '../../components/TableOfContents.astro';
 import MobileTableOfContents from '../../components/MobileTableOfContents.astro';
 import SocialShare from '../../components/SocialShare.astro';
 import StructuredData from '../../components/StructuredData.astro';
+import CalendarIcon from '../../components/icons/CalendarIcon.astro';
+import { formatDate } from '../../lib/utils';
 import '../../styles/global.css';
 
 export async function getStaticPaths() {
@@ -22,16 +24,6 @@ type Props = CollectionEntry<'blog'>;
 
 const post = Astro.props;
 const { Content, headings } = await post.render();
-
-// 静的サイト生成ではサーバーサイドでURLパラメータを取得できないため
-// クライアントサイドで処理する
-
-function formatDate(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}/${month}/${day}`;
-}
 ---
 
 <Layout 
@@ -78,18 +70,22 @@ function formatDate(date: Date) {
           {post.data.title}
         </h1>
         
-        <div class="flex items-center justify-start gap-4 text-xs md:text-sm text-gray-600 dark:text-retro-text/80 mb-4">
-          <span>
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mb-6 text-sm text-gray-500 dark:text-retro-text/70">
+          <div class="flex items-center gap-2">
+            <CalendarIcon class="w-4 h-4" />
+            <span class="font-medium">Published:</span>
             <time datetime={post.data.pubDate.toISOString()}>
               {formatDate(post.data.pubDate)}
             </time>
-          </span>
+          </div>
           {post.data.updatedDate && (
-            <span>
-              更新日: <time datetime={post.data.updatedDate.toISOString()}>
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+              <span class="font-medium">Updated:</span>
+              <time datetime={post.data.updatedDate.toISOString()}>
                 {formatDate(post.data.updatedDate)}
               </time>
-            </span>
+            </div>
           )}
         </div>
         
