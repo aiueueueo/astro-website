@@ -1,7 +1,8 @@
 /* remark-link-card styles - compatible version */
 .rlc-container,
 a.rlc-container {
-  border: 1px solid #e5e7eb !important;
+  /* 青みのあるグレー(#e5e7eb)から、温かみのあるStone系(#e7e5e4)へ変更 */
+  border: 1px solid #e7e5e4 !important;
   border-radius: 0.5rem !important;
   text-decoration: none !important;
   color: inherit !important;
@@ -24,23 +25,26 @@ a.rlc-container {
 
 .rlc-container:hover,
 a.rlc-container:hover {
-  background-color: #f9fafb !important;
-  border-color: #3b82f6 !important;
+  /* 青みのあるグレー(#f9fafb)から、温かみのあるStone系(#fafaf9)へ変更 */
+  background-color: #fafaf9 !important;
+  /* 青色(#3b82f6)からテーマカラーの緑に変更 */
+  border-color: #477A72 !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  .rlc-container,
-  a.rlc-container {
-    background-color: #1f2937 !important;
-    border-color: #374151 !important;
-  }
-  
-  .rlc-container:hover,
-  a.rlc-container:hover {
-    background-color: #111827 !important;
-    border-color: #3b82f6 !important;
-  }
+html.dark .rlc-container,
+html.dark a.rlc-container {
+  /* 青みグレー(#1f2937)から、サイト背景(#222222)に馴染む少し明るいグレーへ */
+  background-color: #2d2d2d !important;
+  border-color: #444444 !important;
+}
+
+html.dark .rlc-container:hover,
+html.dark a.rlc-container:hover {
+  /* ホバー時も青み(#111827)を消してニュートラルに */
+  background-color: #333333 !important;
+  /* テーマカラーの緑 */
+  border-color: #477A72 !important;
 }
 
 .rlc-info {
@@ -58,7 +62,8 @@ a.rlc-container:hover {
   font-size: 1rem !important;
   font-weight: 600 !important;
   line-height: 1.3 !important;
-  color: #111827 !important;
+  /* 青みのある黒(#111827)から、温かみのある黒(#1c1917)へ変更 */
+  color: #1c1917 !important;
   overflow: hidden !important;
   display: -webkit-box !important;
   text-overflow: ellipsis !important;
@@ -67,15 +72,14 @@ a.rlc-container:hover {
   margin-bottom: 0.5rem !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  .rlc-title {
-    color: #f9fafb !important;
-  }
+html.dark .rlc-title {
+  color: #f9fafb !important;
 }
 
 .rlc-description {
   font-size: 0.875rem !important;
-  color: #6b7280 !important;
+  /* 青みのあるグレー(#6b7280)から、温かみのあるグレー(#78716c)へ変更 */
+  color: #78716c !important;
   margin-bottom: 0.5rem !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -83,10 +87,8 @@ a.rlc-container:hover {
   line-height: 1.25 !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  .rlc-description {
-    color: #9ca3af !important;
-  }
+html.dark .rlc-description {
+  color: #9ca3af !important;
 }
 
 .rlc-url-container {
@@ -104,17 +106,16 @@ a.rlc-container:hover {
 
 .rlc-url {
   font-size: 0.75rem !important;
-  color: #9ca3af !important;
+  /* 青みのあるグレー(#9ca3af)から、温かみのあるグレー(#a8a29e)へ変更 */
+  color: #a8a29e !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
   flex: 1 !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  .rlc-url {
-    color: #6b7280 !important;
-  }
+html.dark .rlc-url {
+  color: #6b7280 !important;
 }
 
 .rlc-image-container {
