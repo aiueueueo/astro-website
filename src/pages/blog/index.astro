@@ -11,7 +11,7 @@ import StructuredData from '../../components/StructuredData.astro';
 // microCMSから記事を取得（1ページ目）
 const response = await getBlogs({ limit: BLOG_CONFIG.PAGINATION.POSTS_PER_PAGE });
 const totalPages = calculateTotalPages(response.totalCount, BLOG_CONFIG.PAGINATION.POSTS_PER_PAGE);
-const blogArticles = response.contents.map(transformBlogPost);
+const blogArticles = response.contents.map(post => transformBlogPost(post));
 ---
 
 <Layout title="Blog - aiueueue's blog" description="Web開発とプログラミングに関する全ての記事">

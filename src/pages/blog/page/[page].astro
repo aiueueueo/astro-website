@@ -28,7 +28,7 @@ const response = await getBlogs({
   limit: perPage,
   offset: (page - 1) * perPage,
 });
-const blogArticles = response.contents.map(transformBlogPost);
+const blogArticles = response.contents.map(post => transformBlogPost(post));
 ---
 
 <Layout title={`Blog - ページ ${page}`} description="Web開発とプログラミングに関する記事一覧">
