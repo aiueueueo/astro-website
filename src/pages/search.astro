@@ -213,7 +213,7 @@ const articles = response.contents.map(post => {
       // 最初のマッチ位置を見つける
       const matchIndex = lowerContent.indexOf(lowerTerm);
       if (matchIndex === -1) {
-        return content.slice(0, maxLength) + (content.length > maxLength ? '...' : '');
+        return escapeHtml(content.slice(0, maxLength) + (content.length > maxLength ? '...' : ''));
       }
 
       // スニペットの開始位置を計算（前後の文脈を含める）
@@ -228,8 +228,10 @@ const articles = response.contents.map(post => {
       if (startIndex > 0) snippet = '...' + snippet;
       if (endIndex < content.length) snippet = snippet + '...';
 
-      // 検索語をハイライト
-      const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+      // HTMLエスケープ後に検索語をハイライト
+      snippet = escapeHtml(snippet);
+      const escapedTerm = escapeHtml(searchTerm);
+      const regex = new RegExp(`(${escapeRegex(escapedTerm)})`, 'gi');
       snippet = snippet.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-600/50 px-1 rounded">$1</mark>');
 
       return snippet;
@@ -240,11 +242,22 @@ const articles = response.contents.map(post => {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    // テキストハイライト関数
+    // HTMLエスケープ
+    function escapeHtml(string) {
+      return string
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // テキストハイライト関数（XSS対策: エスケープ後にマーク処理）
     function highlightText(text, searchTerm) {
-      if (!searchTerm) return text;
-      const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
-      return text.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-600/50 px-1 rounded">$1</mark>');
+      if (!searchTerm) return escapeHtml(text);
+      const escaped = escapeHtml(text);
+      const escapedTerm = escapeHtml(searchTerm);
+      const regex = new RegExp(`(${escapeRegex(escapedTerm)})`, 'gi');
+      return escaped.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-600/50 px-1 rounded">$1</mark>');
     }
 
     // フォールバックスニペット生成関数（descriptionがない場合用）
@@ -252,7 +265,7 @@ const articles = response.contents.map(post => {
       const cleanText = content.replace(/\s+/g, ' ').trim();
 
       if (cleanText.length <= maxLength) {
-        return cleanText;
+        return escapeHtml(cleanText);
       }
 
       // 文境界で切り捨て
@@ -264,10 +277,10 @@ const articles = response.contents.map(post => {
       );
 
       if (lastSentenceEnd > maxLength * 0.7) {
-        return truncated.substring(0, lastSentenceEnd + 1);
+        return escapeHtml(truncated.substring(0, lastSentenceEnd + 1));
       }
 
-      return truncated + '...';
+      return escapeHtml(truncated + '...');
     }
 
     function displayResults(results, query, isTagSearch = false) {
@@ -403,7 +416,7 @@ const articles = response.contents.map(post => {
       titleH2.style.webkitLineClamp = '2';
       titleH2.style.webkitBoxOrient = 'vertical';
       titleH2.style.overflow = 'hidden';
-      titleH2.innerHTML = article.highlightedTitle || article.title;
+      titleH2.innerHTML = article.highlightedTitle || escapeHtml(article.title);
 
 
       // スニペット（ハイライト対応）
@@ -413,7 +426,7 @@ const articles = response.contents.map(post => {
       snippetDiv.style.webkitLineClamp = '4';
       snippetDiv.style.webkitBoxOrient = 'vertical';
       snippetDiv.style.overflow = 'hidden';
-      snippetDiv.innerHTML = article.snippet || article.description;
+      snippetDiv.innerHTML = article.snippet || escapeHtml(article.description);
 
 
       // タグ
