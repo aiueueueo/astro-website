@@ -11,7 +11,7 @@ import { getBlogs } from '../../lib/microcms';
 import { transformContent } from '../../lib/content-transformer';
 import { BLOG_CONFIG } from '../../lib/constants';
 import type { BlogPost } from '../../types';
-import { formatDate } from '../../lib/utils';
+import { formatDate, optimizeImage } from '../../lib/utils';
 import '../../styles/global.css';
 
 export async function getStaticPaths() {
@@ -47,7 +47,7 @@ while ((match = headingRegex.exec(transformedContent)) !== null) {
 <Layout
   title={`${post.title} - aiueueue's blog`}
   description={post.description}
-  image={post.heroImage?.url}
+  image={post.heroImage?.url ? optimizeImage(post.heroImage.url, 'OGP') : undefined}
   article={true}
 >
   <StructuredData type="article" post={post} />
@@ -72,7 +72,7 @@ while ((match = headingRegex.exec(transformedContent)) !== null) {
         <div class="flex justify-center mb-6">
           <div class="aspect-[16/9] max-h-64 overflow-hidden rounded-lg">
             <img
-              src={post.heroImage.url}
+              src={optimizeImage(post.heroImage.url, 'HERO')}
               alt={post.title}
               class="w-full h-full object-cover"
               loading="lazy"

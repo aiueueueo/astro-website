@@ -1,16 +1,17 @@
 import type { BlogPost, ArticleData } from '../../types';
 import { formatISODate } from './date';
 import { decodeHtmlEntities } from './html';
+import { optimizeImage, type ImageSize } from './image';
 import { SITE_CONFIG } from '../constants';
 
 /**
  * ブログ記事をArticleDataに変換
  */
-export function transformBlogPost(post: BlogPost): ArticleData {
+export function transformBlogPost(post: BlogPost, imageSize: ImageSize = 'THUMBNAIL'): ArticleData {
   return {
     title: post.title,
     description: post.description,
-    image: post.heroImage?.url || SITE_CONFIG.DEFAULT_IMAGES.ARTICLE,
+    image: post.heroImage?.url ? optimizeImage(post.heroImage.url, imageSize) : SITE_CONFIG.DEFAULT_IMAGES.ARTICLE,
     tags: post.tags || [],
     date: formatISODate(new Date(post.publishedDate)),
     slug: post.id,
