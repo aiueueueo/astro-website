@@ -128,8 +128,6 @@ function addHeadingIds(html: string): string {
     // 既にid属性がある場合はそのまま返す
     if (/\bid="[^"]*"/.test(attrs)) return match;
 
-    // テキストからslugを生成
-    const text = content.replace(/<[^>]*>/g, '').trim();
     const slug = `heading-${counter++}`;
     return `<h${level}${attrs} id="${slug}">${content}</h${level}>`;
   });
