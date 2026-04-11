@@ -17,5 +17,5 @@ export * from './ui';
 
 // 後方互換性のための個別エクスポート（既存コードとの互換性を保つため）
 export { SITE_CONFIG as SITE_INFO } from './site';
-export { BLOG_CONFIG as PAGINATION, BLOG_CONFIG as RELATED_ARTICLES } from './blog';
+export { BLOG_CONFIG as PAGINATION } from './blog';
 export { SITE_CONFIG as DEFAULT_IMAGES } from './site';

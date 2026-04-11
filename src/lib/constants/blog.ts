@@ -12,15 +12,6 @@ export const BLOG_CONFIG = {
     HOMEPAGE_POSTS: 5
   },
   
-  // 関連記事設定
-  RELATED_ARTICLES: {
-    MAX_RESULTS: 3,
-    TAG_SCORE: 10,
-    DATE_BONUS_30_DAYS: 5,
-    DATE_BONUS_90_DAYS: 3,
-    DATE_BONUS_180_DAYS: 1
-  },
-  
   // 記事表示設定
   ARTICLE: {
     EXCERPT_LENGTH: 200,
