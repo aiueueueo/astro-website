@@ -1,5 +1,4 @@
 import { createClient } from 'microcms-js-sdk';
-import type { MicroCMSListResponse } from 'microcms-js-sdk';
 import type { BlogPost } from '../types';
 
 // microCMSクライアントの初期化
@@ -36,5 +35,3 @@ export async function getBlogCount() {
   return response.totalCount;
 }
 
-// 型の再エクスポート
-export type { MicroCMSListResponse };

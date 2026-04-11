@@ -201,13 +201,17 @@ async function fetchOgp(url: string): Promise<OgpData> {
     return regex.exec(html)?.[1] || altRegex.exec(html)?.[1] || '';
   };
 
-  const title = getMetaContent('og:title')
+  const title = decodeHtmlEntities(
+    getMetaContent('og:title')
     || html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1]
-    || url;
+    || url
+  );
 
-  const description = getMetaContent('og:description')
+  const description = decodeHtmlEntities(
+    getMetaContent('og:description')
     || getMetaContent('description')
-    || '';
+    || ''
+  );
 
   const image = getMetaContent('og:image') || '';
   const favicon = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=32`;
