@@ -113,7 +113,7 @@ function detectLanguage(code: string): string {
   if (/^(fn |use |let mut |pub )/.test(firstLine)) return 'rust';
   if (/^(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER)\s/i.test(firstLine)) return 'sql';
   if (firstLine.startsWith('<') && firstLine.endsWith('>')) return 'html';
-  if (/^[.#@]/.test(firstLine) || code.includes('{') && code.includes(':') && code.includes(';')) return 'css';
+  if (/^[.#@]/.test(firstLine) || (code.includes('{') && code.includes(':') && code.includes(';'))) return 'css';
 
   return 'text';
 }
