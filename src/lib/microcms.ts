@@ -43,13 +43,5 @@ export async function getBlogCount() {
   return response.totalCount;
 }
 
-// 個別記事を取得
-export async function getBlogDetail(contentId: string) {
-  return await client.getListDetail<Blog>({
-    endpoint: 'blogs',
-    contentId,
-  });
-}
-
 // 型の再エクスポート
 export type { MicroCMSListResponse };
