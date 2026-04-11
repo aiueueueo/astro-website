@@ -19,7 +19,7 @@ export const IMAGE_SIZES = {
   OGP: { w: 1200, h: 630 },
 } as const;
 
-type ImageSize = keyof typeof IMAGE_SIZES;
+export type ImageSize = keyof typeof IMAGE_SIZES;
 
 /**
  * microCMS画像URLにリサイズパラメータを付与する
