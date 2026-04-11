@@ -30,9 +30,9 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
                 href={`#${heading.slug}`}
                 data-heading-id={heading.slug}
                 class={`toc-link block text-sm py-1.5 transition-colors duration-200 relative leading-snug ${
-                  heading.depth === 2 
-                    ? 'pl-4 text-gray-600 dark:text-retro-text/80' 
-                    : 'pl-8 text-gray-500 dark:text-retro-text/60 text-xs'
+                  heading.depth === 2
+                    ? 'toc-link-h2 pl-4 text-gray-600 dark:text-retro-text/80'
+                    : 'toc-link-h3 pl-8 text-gray-500 dark:text-retro-text/60 text-xs'
                 }`}
               >
                 {heading.text}
@@ -65,21 +65,29 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
     @apply no-underline;
   }
   
-  /* ドット（丸）のデザイン - 非アクティブ時 */
+  /* ドット（丸）のデザイン - 共通 */
   .toc-link::before {
     content: '';
     position: absolute;
-    /* ボーダー(2px)の中心に合わせる */
     left: -1px;
     top: 50%;
-    /* 中心基準で配置することでズレを防ぐ */
     transform: translate(-50%, -50%);
-    width: 6px;
-    height: 6px;
     border-radius: 50%;
     @apply bg-gray-300 dark:bg-white/20;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1;
+  }
+
+  /* h2: 大きめのドット */
+  .toc-link-h2::before {
+    width: 10px;
+    height: 10px;
+  }
+
+  /* h3: 小さめのドット */
+  .toc-link-h3::before {
+    width: 6px;
+    height: 6px;
   }
 
   /* ホバー時のスタイル */
@@ -193,10 +201,18 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
   /* アクティブなマーカー（ダイヤモンド型） */
   .toc-nav a.active::before {
     @apply bg-retro-red dark:bg-retro-red !important;
-    width: 8px !important;
-    height: 8px !important;
     border-radius: 1px !important;
     transform: translate(-50%, -50%) rotate(45deg) !important;
+  }
+
+  .toc-nav a.active.toc-link-h2::before {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  .toc-nav a.active.toc-link-h3::before {
+    width: 6px !important;
+    height: 6px !important;
   }
   
   /* 以前のホバー背景色を無効化 */
