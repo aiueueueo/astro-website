@@ -5,19 +5,12 @@ import Footer from '../components/layout/Footer.astro';
 import ArticleCard from '../components/blog/ArticleCard.astro';
 import InstallPrompt from '../components/InstallPrompt.astro';
 import { getBlogs } from '../lib/microcms';
-import { SITE_CONFIG } from '../lib/constants';
+import { transformBlogPost } from '../lib/utils/blog';
 import StructuredData from '../components/StructuredData.astro';
 
 // microCMSから最新5件の記事を取得
 const response = await getBlogs({ limit: 5 });
-const articles = response.contents.map(post => ({
-  title: post.title,
-  description: post.description,
-  image: post.heroImage?.url || SITE_CONFIG.DEFAULT_IMAGES.ARTICLE,
-  tags: post.tags || [],
-  date: new Date(post.publishedDate).toISOString().split('T')[0],
-  slug: post.id
-}));
+const articles = response.contents.map(transformBlogPost);
 ---
 
 <Layout title="Home - aiueueue's blog">

@@ -9,17 +9,15 @@ import Button from '../ui/Button.astro';
 export interface Props {
   currentPost: BlogPost;
   maxResults?: number;
-  useAdvanced?: boolean;
 }
 
 const {
   currentPost,
   maxResults = BLOG_CONFIG.RELATED_ARTICLES.MAX_RESULTS,
-  useAdvanced = false
 } = Astro.props;
 
 // microCMSから全記事を取得
-const response = await getBlogs({ limit: 100 });
+const response = await getBlogs({ limit: BLOG_CONFIG.API_FETCH_LIMIT });
 const currentTags = currentPost.tags || [];
 
 const relatedPosts = response.contents
@@ -37,9 +35,6 @@ const relatedPosts = response.contents
 
 // 関連記事をArticleCard で使える形式に変換
 const relatedArticles = relatedPosts.map(post => transformBlogPost(post));
-
-// 関連度の高い記事があるかチェック
-const hasHighRelevance = relatedPosts.some(post => post.score > 0);
 ---
 
 {relatedArticles.length > 0 && (
@@ -84,26 +79,6 @@ const hasHighRelevance = relatedPosts.some(post => post.score > 0);
       ))}
     </div>
 
-    <!-- 関連記事が見つからない場合の説明 -->
-    {!hasHighRelevance && (
-      <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-        <div class="flex items-start gap-3">
-          <div class="flex-shrink-0">
-            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div>
-            <h3 class="text-sm font-medium text-blue-900 dark:text-blue-200 mb-1">
-              最新記事を表示中
-            </h3>
-            <p class="text-sm text-blue-800 dark:text-blue-300">
-              タグが一致する関連記事が見つからなかったため、最新の記事を表示しています
-            </p>
-          </div>
-        </div>
-      </div>
-    )}
   </section>
 )}
 

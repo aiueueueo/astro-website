@@ -4,20 +4,19 @@ import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import { getBlogs } from '../lib/microcms';
-import { cleanContentForSearch } from '../lib/utils/blog';
+import { transformBlogPost, cleanContentForSearch } from '../lib/utils/blog';
+import { BLOG_CONFIG } from '../lib/constants';
 import '../styles/global.css';
 
 // microCMSから全記事を取得
-const response = await getBlogs({ limit: 100 });
-const articles = response.contents.map(post => ({
-  title: post.title,
-  description: post.description || "",
-  image: post.heroImage?.url || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop",
-  tags: post.tags || [],
-  date: new Date(post.publishedDate).toISOString().split('T')[0],
-  slug: post.id,
-  content: cleanContentForSearch(post.content).substring(0, 500)
-}));
+const response = await getBlogs({ limit: BLOG_CONFIG.API_FETCH_LIMIT });
+const articles = response.contents.map(post => {
+  const article = transformBlogPost(post);
+  return {
+    ...article,
+    content: cleanContentForSearch(post.content).substring(0, 500)
+  };
+});
 
 ---
 
@@ -250,17 +249,7 @@ const articles = response.contents.map(post => ({
 
     // フォールバックスニペット生成関数（descriptionがない場合用）
     function generateFallbackSnippet(content, maxLength = 160) {
-      // HTMLタグや改行を除去し、最初の文から抜粋を作成
-      const cleanText = content
-        .replace(/<[^>]*>/g, '') // HTMLタグを除去
-        .replace(/```[\s\S]*?```/g, '') // コードブロックを除去
-        .replace(/#{1,6}\s/g, '') // マークダウンのヘッダーを除去
-        .replace(/\*\*(.*?)\*\*/g, '$1') // Bold記法を除去
-        .replace(/\*(.*?)\*/g, '$1') // Italic記法を除去
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // リンクを除去
-        .replace(/\n\s*\n/g, ' ') // 改行を除去
-        .replace(/\s+/g, ' ') // 複数スペースを単一スペースに
-        .trim();
+      const cleanText = content.replace(/\s+/g, ' ').trim();
 
       if (cleanText.length <= maxLength) {
         return cleanText;

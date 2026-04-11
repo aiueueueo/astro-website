@@ -1,8 +1,9 @@
 import rss from '@astrojs/rss';
 import { getBlogs } from '../lib/microcms';
+import { BLOG_CONFIG } from '../lib/constants';
 
 export async function GET(context) {
-  const response = await getBlogs({ limit: 100 });
+  const response = await getBlogs({ limit: BLOG_CONFIG.API_FETCH_LIMIT });
 
   return rss({
     title: 'Blog',

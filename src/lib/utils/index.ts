@@ -15,5 +15,8 @@ export * from './blog';
 // 日付関連ユーティリティ
 export * from './date';
 
+// HTML関連ユーティリティ
+export * from './html';
+
 // 後方互換性のため（既存の場所からのインポートを保つ）
 export { classNames } from './styles';
