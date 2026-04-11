@@ -1,22 +1,19 @@
 import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
+import { getBlogs } from '../lib/microcms';
 
 export async function GET(context) {
-  const posts = await getCollection('blog');
-  
+  const response = await getBlogs({ limit: 100 });
+
   return rss({
     title: 'Blog',
     description: 'Web開発とプログラミングに関するブログ',
     site: context.site,
-    items: posts
-      .filter(post => !post.data.draft)
-      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-      .map((post) => ({
-        title: post.data.title,
-        description: post.data.description,
-        pubDate: post.data.pubDate,
-        link: `/blog/${post.slug}/`,
-      })),
+    items: response.contents.map((post) => ({
+      title: post.title,
+      description: post.description,
+      pubDate: new Date(post.publishedDate),
+      link: `/blog/${post.id}/`,
+    })),
     customData: `<language>ja-jp</language>`,
   });
 }

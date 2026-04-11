@@ -1,36 +1,33 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import { getCollection } from 'astro:content';
+import type { BlogPost } from '../../types';
+import { getBlogs } from '../../lib/microcms';
 import { transformBlogPost } from '../../lib/utils';
 import { BLOG_CONFIG } from '../../lib/constants';
 import ArticleCard from './ArticleCard.astro';
 import Button from '../ui/Button.astro';
 
 export interface Props {
-  currentPost: CollectionEntry<'blog'>;
+  currentPost: BlogPost;
   maxResults?: number;
   useAdvanced?: boolean;
 }
 
-const { 
-  currentPost, 
-  maxResults = BLOG_CONFIG.RELATED_ARTICLES.MAX_RESULTS, 
-  useAdvanced = false 
+const {
+  currentPost,
+  maxResults = BLOG_CONFIG.RELATED_ARTICLES.MAX_RESULTS,
+  useAdvanced = false
 } = Astro.props;
 
-// 全ての公開記事を取得
-const allPosts = await getCollection('blog');
+// microCMSから全記事を取得
+const response = await getBlogs({ limit: 100 });
+const currentTags = currentPost.tags || [];
 
-// シンプルな関連記事取得ロジック（タグベース）
-const publishedPosts = allPosts.filter(post => !post.data.draft && post.slug !== currentPost.slug);
-const currentTags = currentPost.data.tags;
-
-const relatedPosts = publishedPosts
+const relatedPosts = response.contents
+  .filter(post => post.id !== currentPost.id)
   .map(post => {
-    const commonTags = post.data.tags.filter(tag => currentTags.includes(tag));
+    const commonTags = (post.tags || []).filter(tag => currentTags.includes(tag));
     return {
-      ...post.data,
-      slug: post.slug,
+      ...post,
       score: commonTags.length
     };
   })
@@ -39,31 +36,27 @@ const relatedPosts = publishedPosts
   .slice(0, maxResults);
 
 // 関連記事をArticleCard で使える形式に変換
-const relatedArticles = relatedPosts.map(post => transformBlogPost({
-  data: post,
-  slug: post.slug,
-  body: ''
-} as CollectionEntry<'blog'>));
+const relatedArticles = relatedPosts.map(post => transformBlogPost(post));
 
 // 関連度の高い記事があるかチェック
 const hasHighRelevance = relatedPosts.some(post => post.score > 0);
 ---
 
 {relatedArticles.length > 0 && (
-  <section 
+  <section
     class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
     aria-labelledby="related-articles-heading"
   >
     <!-- セクションヘッダー -->
     <div class="mb-6">
-      <h2 
+      <h2
         id="related-articles-heading"
         class="text-2xl font-bold text-gray-900 dark:text-white mb-2"
       >
         関連記事
       </h2>
     </div>
-    
+
     <!-- 関連記事グリッド -->
     <div class="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
       {relatedArticles.map((article, index) => (
@@ -81,8 +74,8 @@ const hasHighRelevance = relatedPosts.some(post => post.score > 0);
               </div>
             </div>
           )}
-          
-          <ArticleCard 
+
+          <ArticleCard
             {...article}
             compact={false}
             eager={false}
@@ -90,7 +83,7 @@ const hasHighRelevance = relatedPosts.some(post => post.score > 0);
         </div>
       ))}
     </div>
-    
+
     <!-- 関連記事が見つからない場合の説明 -->
     {!hasHighRelevance && (
       <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -116,7 +109,7 @@ const hasHighRelevance = relatedPosts.some(post => post.score > 0);
 
 <!-- 関連記事が全く見つからない場合 -->
 {relatedArticles.length === 0 && (
-  <section 
+  <section
     class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
     aria-labelledby="no-related-articles-heading"
   >
@@ -126,7 +119,7 @@ const hasHighRelevance = relatedPosts.some(post => post.score > 0);
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
       </div>
-      <h3 
+      <h3
         id="no-related-articles-heading"
         class="text-lg font-medium text-gray-900 dark:text-white mb-2"
       >
@@ -136,8 +129,8 @@ const hasHighRelevance = relatedPosts.some(post => post.score > 0);
         この記事に関連する他の記事が見つかりませんでした
       </p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <Button 
-          href="/blog" 
+        <Button
+          href="/blog"
           variant="primary"
           size="md"
         >
@@ -146,8 +139,8 @@ const hasHighRelevance = relatedPosts.some(post => post.score > 0);
           </svg>
           全ての記事を見る
         </Button>
-        <Button 
-          href="/search" 
+        <Button
+          href="/search"
           variant="secondary"
           size="md"
         >
@@ -167,7 +160,7 @@ const hasHighRelevance = relatedPosts.some(post => post.score > 0);
     transform: scale(1.05);
     transition: transform 0.2s ease-out;
   }
-  
+
   /* モバイルでの関連記事カードのコンパクト表示 */
   @media (max-width: 767px) {
     .related-article-card {
@@ -176,12 +169,12 @@ const hasHighRelevance = relatedPosts.some(post => post.score > 0);
       margin-bottom: 0.5rem;
     }
   }
-  
+
   /* 詳細の開閉アニメーション */
   details[open] summary {
     margin-bottom: 0.5rem;
   }
-  
+
   /* アクセシビリティ: フォーカス表示 */
   summary:focus {
     outline: 2px solid #3b82f6;

@@ -1,9 +1,9 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import type { BlogPost } from '../types';
 
 export interface Props {
   type: 'article' | 'blog' | 'website';
-  post?: CollectionEntry<'blog'>;
+  post?: BlogPost;
   url?: string;
   title?: string;
   description?: string;
@@ -24,9 +24,9 @@ if (type === 'article' && post) {
   structuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": post.data.title,
-    "description": post.data.description,
-    "image": post.data.heroImage ? new URL(post.data.heroImage, SITE_URL).toString() : undefined,
+    "headline": post.title,
+    "description": post.description,
+    "image": post.heroImage?.url ? new URL(post.heroImage.url, SITE_URL).toString() : undefined,
     "author": {
       "@type": "Person",
       "name": AUTHOR_NAME,
@@ -37,16 +37,16 @@ if (type === 'article' && post) {
       "name": SITE_NAME,
       "url": SITE_URL
     },
-    "datePublished": post.data.pubDate.toISOString(),
-    "dateModified": post.data.updatedDate?.toISOString() || post.data.pubDate.toISOString(),
+    "datePublished": new Date(post.publishedDate).toISOString(),
+    "dateModified": post.updatedDate ? new Date(post.updatedDate).toISOString() : new Date(post.publishedDate).toISOString(),
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": new URL(`/blog/${post.slug}/`, SITE_URL).toString()
+      "@id": new URL(`/blog/${post.id}/`, SITE_URL).toString()
     },
-    "keywords": post.data.tags.join(', '),
+    "keywords": (post.tags || []).join(', '),
     "articleSection": "Technology",
     "inLanguage": "ja-JP",
-    "url": new URL(`/blog/${post.slug}/`, SITE_URL).toString()
+    "url": new URL(`/blog/${post.id}/`, SITE_URL).toString()
   };
 } else if (type === 'blog') {
   // ブログリスト用の構造化データ
@@ -94,7 +94,7 @@ if (type === 'article' && post) {
 }
 
 // 不要なundefinedプロパティを除去
-const cleanStructuredData = JSON.parse(JSON.stringify(structuredData, (key, value) => 
+const cleanStructuredData = JSON.parse(JSON.stringify(structuredData, (key, value) =>
   value === undefined ? undefined : value
 ));
 ---
