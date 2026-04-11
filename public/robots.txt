@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /offline
+Disallow: /search
+
+Sitemap: https://astro-blog.pages.dev/sitemap-index.xml
