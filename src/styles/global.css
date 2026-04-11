@@ -77,11 +77,11 @@
   }
 
   .prose li ul {
-    @apply mt-1;
+    @apply my-1;
   }
 
   .prose li ol {
-    @apply mt-1;
+    @apply my-1;
   }
 
   .prose strong {
