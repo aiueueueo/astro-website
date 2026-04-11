@@ -70,7 +70,7 @@ while ((match = headingRegex.exec(transformedContent)) !== null) {
       <!-- Hero Image -->
       {post.heroImage?.url && (
         <div class="flex justify-center mb-6">
-          <div class="aspect-[16/9] max-h-64 overflow-hidden rounded-lg">
+          <div class="aspect-[1.91/1] max-h-96 overflow-hidden rounded-lg">
             <img
               src={optimizeImage(post.heroImage.url, 'HERO')}
               alt={post.title}
