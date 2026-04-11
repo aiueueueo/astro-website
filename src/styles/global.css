@@ -64,8 +64,60 @@
     @apply bg-stone-200 dark:bg-gray-800 rounded-lg p-4 overflow-x-auto;
   }
   
+  .prose ul {
+    @apply list-disc pl-6 my-4 space-y-1;
+  }
+
+  .prose ol {
+    @apply list-decimal pl-6 my-4 space-y-1;
+  }
+
+  .prose li {
+    @apply text-stone-700 dark:text-retro-text;
+  }
+
+  .prose li ul {
+    @apply my-1;
+  }
+
+  .prose li ol {
+    @apply my-1;
+  }
+
+  .prose strong {
+    @apply font-bold text-stone-900 dark:text-retro-text;
+  }
+
+  .prose em {
+    @apply italic;
+  }
+
+  .prose u {
+    @apply underline underline-offset-2;
+  }
+
+  .prose s {
+    @apply line-through text-stone-400 dark:text-retro-text/50;
+  }
+
   .prose blockquote {
-    @apply border-l-4 border-stone-400 dark:border-gray-600 pl-4 italic;
+    @apply border-l-4 border-stone-400 dark:border-gray-600 pl-4 my-4 italic text-stone-600 dark:text-retro-text/70;
+  }
+
+  .prose hr {
+    @apply my-8 border-t border-stone-300 dark:border-gray-600;
+  }
+
+  .prose table {
+    @apply w-full my-4 border-collapse text-sm;
+  }
+
+  .prose th {
+    @apply bg-stone-100 dark:bg-gray-700 border border-stone-300 dark:border-gray-600 px-4 py-2 text-left font-semibold text-stone-900 dark:text-retro-text;
+  }
+
+  .prose td {
+    @apply border border-stone-300 dark:border-gray-600 px-4 py-2 text-stone-700 dark:text-retro-text;
   }
 }
 
