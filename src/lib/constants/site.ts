@@ -5,7 +5,7 @@
 export const SITE_CONFIG = {
   TITLE: "aiueueue's blog",
   DESCRIPTION: "Web開発とプログラミングに関するブログ",
-  COPYRIGHT: "© 2024 aiueueue's blog. All rights reserved.",
+  COPYRIGHT: "© 2024 aiueueue's blog",
   
   // SEO関連
   AUTHOR: "aiueueue",
