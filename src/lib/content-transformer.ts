@@ -50,7 +50,7 @@ async function highlightCodeBlocks(html: string): Promise<string> {
         theme: 'github-dark',
       });
       const withFilename = `<div class="code-block-wrapper">${filename ? `<div class="code-block-filename">${escapeHtml(filename)}</div>` : ''}${highlighted}</div>`;
-      result = result.replace(match[0], withFilename);
+      result = result.replace(match[0], () => withFilename);
     } catch {
       // 未対応言語の場合はそのまま残す
     }
@@ -68,7 +68,7 @@ async function highlightCodeBlocks(html: string): Promise<string> {
         lang,
         theme: 'github-dark',
       });
-      result = result.replace(match[0], highlighted);
+      result = result.replace(match[0], () => highlighted);
     } catch {
       // 未対応言語の場合はそのまま残す
     }
@@ -119,6 +119,35 @@ function detectLanguage(code: string): string {
 }
 
 /**
+ * 見出しにid属性を付与する
+ * microCMSのリッチエディタがidを付けない場合でも目次とアンカーリンクが動作するようにする
+ */
+function addHeadingIds(html: string): string {
+  let counter = 0;
+  return html.replace(/<h([2-3])([^>]*)>([\s\S]*?)<\/h[2-3]>/g, (match, level, attrs, content) => {
+    // 既にid属性がある場合はそのまま返す
+    if (/\bid="[^"]*"/.test(attrs)) return match;
+
+    // テキストからslugを生成
+    const text = content.replace(/<[^>]*>/g, '').trim();
+    const slug = `heading-${counter++}`;
+    return `<h${level}${attrs} id="${slug}">${content}</h${level}>`;
+  });
+}
+
+/**
+ * URLが安全か検証する（http/httpsのみ許可）
+ */
+function isSafeUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+/**
  * 単独行のリンクをカード表示に変換
  *
  * microCMSのリッチエディタでURLだけの段落は以下の形式になる:
@@ -139,7 +168,7 @@ async function transformLinkCards(html: string): Promise<string> {
     try {
       const ogp = await fetchOgp(url);
       const card = buildLinkCard(url, ogp);
-      result = result.replace(match[0], card);
+      result = result.replace(match[0], () => card);
     } catch {
       // OGP取得に失敗した場合はそのまま残す
     }
@@ -180,8 +209,6 @@ async function fetchOgp(url: string): Promise<OgpData> {
     || '';
 
   const image = getMetaContent('og:image') || '';
-
-  const origin = new URL(url).origin;
   const favicon = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=32`;
 
   return { title, description, image, favicon };
@@ -194,17 +221,18 @@ function buildLinkCard(url: string, ogp: OgpData): string {
   const hostname = new URL(url).hostname;
   const escapedTitle = escapeHtml(ogp.title);
   const escapedDesc = escapeHtml(ogp.description);
+  const safeImage = ogp.image && isSafeUrl(ogp.image) ? escapeHtml(ogp.image) : '';
 
-  return `<a class="rlc-container" href="${url}" target="_blank" rel="noopener noreferrer">
+  return `<a class="rlc-container" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">
   <div class="rlc-info">
     <div class="rlc-title">${escapedTitle}</div>
     <div class="rlc-description">${escapedDesc}</div>
     <div class="rlc-url-container">
-      <img class="rlc-favicon" src="${ogp.favicon}" alt="" width="16" height="16" />
-      <span class="rlc-url">${hostname}</span>
+      <img class="rlc-favicon" src="${escapeHtml(ogp.favicon)}" alt="" width="16" height="16" />
+      <span class="rlc-url">${escapeHtml(hostname)}</span>
     </div>
   </div>
-  ${ogp.image ? `<div class="rlc-image-container"><img class="rlc-image" src="${ogp.image}" alt="" /></div>` : ''}
+  ${safeImage ? `<div class="rlc-image-container"><img class="rlc-image" src="${safeImage}" alt="" /></div>` : ''}
 </a>`;
 }
 
@@ -221,6 +249,7 @@ function escapeHtml(str: string): string {
  */
 export async function transformContent(html: string): Promise<string> {
   let result = html;
+  result = addHeadingIds(result);
   result = await highlightCodeBlocks(result);
   result = await transformLinkCards(result);
   return result;
