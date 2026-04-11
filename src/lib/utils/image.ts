@@ -9,8 +9,8 @@ const MICROCMS_IMAGE_HOST = 'images.microcms-assets.io';
 
 /** 画像サイズのプリセット */
 export const IMAGE_SIZES = {
-  /** 記事詳細のアイキャッチ（16:9） */
-  HERO: { w: 960, h: 540 },
+  /** 記事詳細のアイキャッチ（1.91:1） */
+  HERO: { w: 960, h: 502 },
   /** 記事一覧のサムネイル（3:2） */
   THUMBNAIL: { w: 600, h: 400 },
   /** ホーム画面のコンパクトサムネイル */
