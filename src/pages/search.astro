@@ -176,28 +176,18 @@ const articles = response.contents.map(post => {
         const result = { ...article };
 
         if (!isTagSearch && searchTerm) {
-          // タイトルのハイライト
-          const titleMatch = article.title.toLowerCase().includes(searchTerm);
-          if (titleMatch) {
-            result.highlightedTitle = highlightText(article.title, query);
-          } else {
-            result.highlightedTitle = article.title;
-          }
-
           // スニペットを生成（本文にマッチした場合）
           const contentMatch = article.content.toLowerCase().includes(searchTerm);
           if (contentMatch) {
             result.snippet = generateSnippet(article.content, query);
-            result.hasContentMatch = true;
           } else {
-            result.snippet = article.description || generateFallbackSnippet(article.content);
-            result.hasContentMatch = false;
+            result.snippet = (article.description || '') || generateFallbackSnippet(article.content);
           }
         } else {
-          result.highlightedTitle = article.title;
-          result.snippet = article.description || generateFallbackSnippet(article.content);
-          result.hasContentMatch = false;
+          result.snippet = (article.description || '') || generateFallbackSnippet(article.content);
         }
+        // 検索語を保持（描画時にDOM操作でハイライト）
+        result.searchQuery = isTagSearch ? '' : query;
 
         return result;
       });
@@ -205,34 +195,23 @@ const articles = response.contents.map(post => {
       displayResults(filteredArticles, searchTerm, isTagSearch);
     }
 
-    // スニペット生成関数
+    // スニペット生成関数（プレーンテキストを返す）
     function generateSnippet(content, searchTerm, maxLength = 160) {
       const lowerContent = content.toLowerCase();
       const lowerTerm = searchTerm.toLowerCase();
 
-      // 最初のマッチ位置を見つける
       const matchIndex = lowerContent.indexOf(lowerTerm);
       if (matchIndex === -1) {
-        return escapeHtml(content.slice(0, maxLength) + (content.length > maxLength ? '...' : ''));
+        return content.slice(0, maxLength) + (content.length > maxLength ? '...' : '');
       }
 
-      // スニペットの開始位置を計算（前後の文脈を含める）
       const contextLength = Math.floor((maxLength - lowerTerm.length) / 2);
       const startIndex = Math.max(0, matchIndex - contextLength);
       const endIndex = Math.min(content.length, startIndex + maxLength);
 
-      // 単語境界で調整
       let snippet = content.slice(startIndex, endIndex);
-
-      // 前後に省略記号を追加
       if (startIndex > 0) snippet = '...' + snippet;
       if (endIndex < content.length) snippet = snippet + '...';
-
-      // HTMLエスケープ後に検索語をハイライト
-      snippet = escapeHtml(snippet);
-      const escapedTerm = escapeHtml(searchTerm);
-      const regex = new RegExp(`(${escapeRegex(escapedTerm)})`, 'gi');
-      snippet = snippet.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-600/50 px-1 rounded">$1</mark>');
 
       return snippet;
     }
@@ -242,22 +221,32 @@ const articles = response.contents.map(post => {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    // HTMLエスケープ
-    function escapeHtml(string) {
-      return string
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    // テキストハイライト関数（XSS対策: エスケープ後にマーク処理）
-    function highlightText(text, searchTerm) {
-      if (!searchTerm) return escapeHtml(text);
-      const escaped = escapeHtml(text);
-      const escapedTerm = escapeHtml(searchTerm);
-      const regex = new RegExp(`(${escapeRegex(escapedTerm)})`, 'gi');
-      return escaped.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-600/50 px-1 rounded">$1</mark>');
+    // DOM操作で安全にハイライトを適用する
+    function applyHighlight(element, text, searchTerm) {
+      element.textContent = '';
+      if (!searchTerm) {
+        element.textContent = text;
+        return;
+      }
+      const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+      let lastIndex = 0;
+      let match;
+      while ((match = regex.exec(text)) !== null) {
+        // マッチ前のテキスト
+        if (match.index > lastIndex) {
+          element.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+        }
+        // マッチ部分をmark要素で囲む
+        const mark = document.createElement('mark');
+        mark.className = 'bg-yellow-200 dark:bg-yellow-600/50 px-1 rounded';
+        mark.textContent = match[1];
+        element.appendChild(mark);
+        lastIndex = regex.lastIndex;
+      }
+      // 残りのテキスト
+      if (lastIndex < text.length) {
+        element.appendChild(document.createTextNode(text.slice(lastIndex)));
+      }
     }
 
     // フォールバックスニペット生成関数（descriptionがない場合用）
@@ -265,10 +254,9 @@ const articles = response.contents.map(post => {
       const cleanText = content.replace(/\s+/g, ' ').trim();
 
       if (cleanText.length <= maxLength) {
-        return escapeHtml(cleanText);
+        return cleanText;
       }
 
-      // 文境界で切り捨て
       const truncated = cleanText.substring(0, maxLength);
       const lastSentenceEnd = Math.max(
         truncated.lastIndexOf('。'),
@@ -277,10 +265,10 @@ const articles = response.contents.map(post => {
       );
 
       if (lastSentenceEnd > maxLength * 0.7) {
-        return escapeHtml(truncated.substring(0, lastSentenceEnd + 1));
+        return truncated.substring(0, lastSentenceEnd + 1);
       }
 
-      return escapeHtml(truncated + '...');
+      return truncated + '...';
     }
 
     function displayResults(results, query, isTagSearch = false) {
@@ -416,7 +404,7 @@ const articles = response.contents.map(post => {
       titleH2.style.webkitLineClamp = '2';
       titleH2.style.webkitBoxOrient = 'vertical';
       titleH2.style.overflow = 'hidden';
-      titleH2.innerHTML = article.highlightedTitle || escapeHtml(article.title);
+      applyHighlight(titleH2, article.title, article.searchQuery);
 
 
       // スニペット（ハイライト対応）
@@ -426,7 +414,7 @@ const articles = response.contents.map(post => {
       snippetDiv.style.webkitLineClamp = '4';
       snippetDiv.style.webkitBoxOrient = 'vertical';
       snippetDiv.style.overflow = 'hidden';
-      snippetDiv.innerHTML = article.snippet || escapeHtml(article.description);
+      applyHighlight(snippetDiv, article.snippet || '', article.searchQuery);
 
 
       // タグ
