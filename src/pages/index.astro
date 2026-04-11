@@ -4,41 +4,37 @@ import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import ArticleCard from '../components/blog/ArticleCard.astro';
 import InstallPrompt from '../components/InstallPrompt.astro';
-import { getCollection } from 'astro:content';
+import { getBlogs } from '../lib/microcms';
 import { SITE_CONFIG } from '../lib/constants';
 import StructuredData from '../components/StructuredData.astro';
 
-// Markdownファイルから記事を取得
-const allPosts = await getCollection('blog');
-const articles = allPosts
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 5) // 最新5件のみ取得
-  .map(post => ({
-    title: post.data.title,
-    description: post.data.description,
-    image: post.data.heroImage || SITE_CONFIG.DEFAULT_IMAGES.ARTICLE,
-    tags: post.data.tags,
-    date: post.data.pubDate.toISOString().split('T')[0],
-    slug: post.slug
-  }));
+// microCMSから最新5件の記事を取得
+const response = await getBlogs({ limit: 5 });
+const articles = response.contents.map(post => ({
+  title: post.title,
+  description: post.description,
+  image: post.heroImage?.url || SITE_CONFIG.DEFAULT_IMAGES.ARTICLE,
+  tags: post.tags || [],
+  date: new Date(post.publishedDate).toISOString().split('T')[0],
+  slug: post.id
+}));
 ---
 
 <Layout title="Home - aiueueue's blog">
-  <StructuredData 
-    type="website" 
+  <StructuredData
+    type="website"
     title="aiueueue's blog"
     description="Web開発、プログラミング、テクノロジーに関する学びと発見を共有するブログです"
     url={Astro.site?.toString()}
   />
   <Header />
-  
+
   <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    
+
     <!-- 1. Simple Profile Section -->
     <section class="flex flex-col items-center text-center mb-16 animate-fade-in">
       <div class="w-32 h-32 rounded-full overflow-hidden ring-4 ring-gray-100 dark:ring-gray-800 shadow-lg mb-6">
-        <img 
+        <img
           src="/profile.png"
           alt="aiueueue's profile"
           class="w-full h-full object-cover"
@@ -60,21 +56,21 @@ const articles = allPosts
         <h2 class="text-xl font-bold text-gray-900 dark:text-retro-text">
           Latest Articles
         </h2>
-        <a 
-          href="/blog" 
+        <a
+          href="/blog"
           class="text-sm font-medium text-retro-red dark:text-retro-red hover:text-retro-red-hover dark:hover:text-retro-red-hover transition-colors"
         >
           View All
         </a>
       </div>
-      
+
       <div class="space-y-6">
         {articles.map((article) => (
           <div class="group">
              <!-- compact=true を使ってリスト風に見せる -->
-             <ArticleCard 
-               {...article} 
-               compact={true} 
+             <ArticleCard
+               {...article}
+               compact={true}
              />
           </div>
         ))}
@@ -82,7 +78,7 @@ const articles = allPosts
     </section>
 
   </main>
-  
+
   <Footer />
   <InstallPrompt />
 </Layout>
@@ -92,7 +88,7 @@ const articles = allPosts
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 0.8s ease-out forwards;
   }

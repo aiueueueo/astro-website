@@ -1,16 +1,25 @@
-import type { CollectionEntry } from 'astro:content';
+import type { MicroCMSDate, MicroCMSImage } from 'microcms-js-sdk';
 
 /**
- * ブログ記事の型定義
+ * microCMSから取得するブログ記事の型定義
  */
-export type BlogPost = CollectionEntry<'blog'>;
+export type BlogPost = {
+  id: string;
+  title: string;
+  description?: string;
+  content: string;
+  heroImage?: MicroCMSImage;
+  tags?: string[];
+  publishedDate: string;
+  updatedDate?: string;
+} & MicroCMSDate;
 
 /**
  * 表示用の記事データ型
  */
 export interface ArticleData {
   title: string;
-  description: string;
+  description?: string;
   image: string;
   tags: string[];
   date: string;

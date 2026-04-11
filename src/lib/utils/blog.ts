@@ -7,28 +7,23 @@ import { SITE_CONFIG } from '../constants';
  */
 export function transformBlogPost(post: BlogPost): ArticleData {
   return {
-    title: post.data.title,
-    description: post.data.description,
-    image: post.data.heroImage || SITE_CONFIG.DEFAULT_IMAGES.ARTICLE,
-    tags: post.data.tags,
-    date: formatISODate(post.data.pubDate),
-    slug: post.slug,
-    content: post.body
+    title: post.title,
+    description: post.description,
+    image: post.heroImage?.url || SITE_CONFIG.DEFAULT_IMAGES.ARTICLE,
+    tags: post.tags || [],
+    date: formatISODate(new Date(post.publishedDate)),
+    slug: post.id,
+    content: post.content
   };
-}
-
-/**
- * 公開記事のみをフィルタリング
- */
-export function getPublishedPosts(posts: BlogPost[]): BlogPost[] {
-  return posts.filter(post => !post.data.draft);
 }
 
 /**
  * 記事を公開日順でソート（新しい順）
  */
 export function sortPostsByDate(posts: BlogPost[]): BlogPost[] {
-  return posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  return [...posts].sort((a, b) =>
+    new Date(b.publishedDate).valueOf() - new Date(a.publishedDate).valueOf()
+  );
 }
 
 /**
@@ -36,9 +31,9 @@ export function sortPostsByDate(posts: BlogPost[]): BlogPost[] {
  */
 export function collectTags(posts: BlogPost[]): TagInfo[] {
   const tagCounts = new Map<string, number>();
-  
+
   posts.forEach(post => {
-    post.data.tags.forEach(tag => {
+    (post.tags || []).forEach(tag => {
       tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
     });
   });
@@ -52,7 +47,7 @@ export function collectTags(posts: BlogPost[]): TagInfo[] {
  * 指定されたタグを持つ記事をフィルタリング
  */
 export function filterPostsByTag(posts: BlogPost[], tag: string): BlogPost[] {
-  return posts.filter(post => post.data.tags.includes(tag));
+  return posts.filter(post => (post.tags || []).includes(tag));
 }
 
 /**
@@ -82,4 +77,3 @@ export function cleanContentForSearch(content: string): string {
     .replace(/### 関連記事[\s\S]*?(?=\n\n|\n#|$)/gi, '')
     .trim();
 }
-

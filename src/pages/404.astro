@@ -2,24 +2,20 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
-import { getCollection } from 'astro:content';
+import { getBlogs } from '../lib/microcms';
 
 // 最新記事を3つ取得
-const allPosts = await getCollection('blog');
-const recentPosts = allPosts
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3)
-  .map(post => ({
-    title: post.data.title,
-    slug: post.slug,
-    description: post.data.description
-  }));
+const response = await getBlogs({ limit: 3 });
+const recentPosts = response.contents.map(post => ({
+  title: post.title,
+  slug: post.id,
+  description: post.description
+}));
 ---
 
 <Layout title="404 - aiueueue's blog" description="お探しのページは見つかりませんでした。">
   <Header />
-  
+
   <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="text-center">
       <!-- 404 アイコン -->
@@ -29,13 +25,13 @@ const recentPosts = allPosts
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
           </svg>
         </div>
-        
+
         <!-- 404 テキスト -->
         <h1 class="text-6xl md:text-8xl font-bold text-gray-300 dark:text-gray-600 mb-4">
           404
         </h1>
       </div>
-      
+
       <!-- メッセージ -->
       <div class="mb-12">
         <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
@@ -46,10 +42,10 @@ const recentPosts = allPosts
           以下のリンクから目的のページを見つけてください。
         </p>
       </div>
-      
+
       <!-- アクションボタン -->
       <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-        <a 
+        <a
           href="/"
           class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
         >
@@ -58,8 +54,8 @@ const recentPosts = allPosts
           </svg>
           ホームに戻る
         </a>
-        
-        <a 
+
+        <a
           href="/blog"
           class="inline-flex items-center justify-center px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium rounded-lg transition-colors duration-200"
         >
@@ -68,8 +64,8 @@ const recentPosts = allPosts
           </svg>
           記事一覧
         </a>
-        
-        <a 
+
+        <a
           href="/search"
           class="inline-flex items-center justify-center px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium rounded-lg transition-colors duration-200"
         >
@@ -79,16 +75,16 @@ const recentPosts = allPosts
           記事を検索
         </a>
       </div>
-      
+
       <!-- 最新記事 -->
       <div class="max-w-2xl mx-auto">
         <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
           最新の記事
         </h3>
-        
+
         <div class="space-y-4">
           {recentPosts.map((post) => (
-            <a 
+            <a
               href={`/blog/${post.slug}/`}
               class="block p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md dark:hover:shadow-gray-900/20 transition-all duration-200 text-left group"
             >
@@ -101,9 +97,9 @@ const recentPosts = allPosts
             </a>
           ))}
         </div>
-        
+
         <div class="mt-8">
-          <a 
+          <a
             href="/blog"
             class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors font-medium"
           >
@@ -113,7 +109,7 @@ const recentPosts = allPosts
       </div>
     </div>
   </main>
-  
+
   <Footer />
 </Layout>
 
@@ -123,7 +119,7 @@ const recentPosts = allPosts
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
   }
-  
+
   .float-animation {
     animation: float 3s ease-in-out infinite;
   }
