@@ -10,12 +10,13 @@ import StructuredData from '../../components/StructuredData.astro';
 import CalendarIcon from '../../components/icons/CalendarIcon.astro';
 import { getBlogs } from '../../lib/microcms';
 import { transformContent } from '../../lib/content-transformer';
+import { BLOG_CONFIG } from '../../lib/constants';
 import type { BlogPost } from '../../types';
 import { formatDate } from '../../lib/utils';
 import '../../styles/global.css';
 
 export async function getStaticPaths() {
-  const response = await getBlogs({ limit: 100 });
+  const response = await getBlogs({ limit: BLOG_CONFIG.API_FETCH_LIMIT });
   return response.contents.map((post) => ({
     params: { slug: post.id },
     props: { post },
@@ -158,7 +159,7 @@ while ((match = headingRegex.exec(transformedContent)) !== null) {
     </div>
 
     <!-- Related Articles -->
-    <RelatedArticles currentPost={post} maxResults={3} useAdvanced={true} />
+    <RelatedArticles currentPost={post} maxResults={3} />
 
     <!-- Navigation -->
     <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">

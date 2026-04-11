@@ -1,0 +1,46 @@
+---
+import ArticleCard from './ArticleCard.astro';
+import Pagination from '../Pagination.astro';
+import Breadcrumb from '../Breadcrumb.astro';
+import type { ArticleData } from '../../types';
+
+export interface Props {
+  articles: ArticleData[];
+  currentPage: number;
+  totalPages: number;
+}
+
+const { articles, currentPage, totalPages } = Astro.props;
+
+const breadcrumbItems = currentPage === 1
+  ? [{ label: 'Home', href: '/' }, { label: 'Blog' }]
+  : [{ label: 'Home', href: '/' }, { label: 'Blog', href: '/blog' }, { label: `${currentPage}ページ目` }];
+---
+
+<!-- Breadcrumb -->
+<Breadcrumb items={breadcrumbItems} />
+
+<!-- Page Title -->
+<div class="mb-12 border-b border-gray-200 dark:border-gray-800 pb-4">
+  <h1 class="text-3xl font-bold text-gray-900 dark:text-retro-text">
+    Blog
+  </h1>
+</div>
+
+<!-- Blog Grid -->
+<div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+  {articles.map((article, index) => (
+    <div class="group h-full">
+      <ArticleCard {...article} compact={false} eager={index < 3} fromPage={currentPage} />
+    </div>
+  ))}
+</div>
+
+<!-- Pagination -->
+{totalPages > 1 && (
+  <Pagination
+    currentPage={currentPage}
+    totalPages={totalPages}
+    baseUrl="/blog"
+  />
+)}

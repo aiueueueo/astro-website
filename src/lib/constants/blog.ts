@@ -3,6 +3,9 @@
  */
 
 export const BLOG_CONFIG = {
+  // API取得上限（記事数が80件を超えたらページング対応が必要）
+  API_FETCH_LIMIT: 100,
+
   // ページネーション設定
   PAGINATION: {
     POSTS_PER_PAGE: 6,

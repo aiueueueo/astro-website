@@ -11,9 +11,6 @@ export const SITE_CONFIG = {
   AUTHOR: "aiueueue",
   LANGUAGE: "ja",
   
-  // URLs
-  BASE_URL: "https://your-domain.com",
-  
   // デフォルト画像
   DEFAULT_IMAGES: {
     ARTICLE: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop",

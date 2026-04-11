@@ -1,4 +1,5 @@
 import { createHighlighter } from 'shiki';
+import { decodeHtmlEntities } from './utils/html';
 
 // Shikiハイライターのシングルトン
 let highlighterPromise: ReturnType<typeof createHighlighter> | null = null;
@@ -41,7 +42,7 @@ async function highlightCodeBlocks(html: string): Promise<string> {
   for (const match of wrappedMatches) {
     const filename = match[1];
     const langAttr = match[2];
-    const rawCode = decodeHtmlEntities(match[3]);
+    const rawCode = decodeCodeBlock(match[3]);
     const lang = langAttr || detectLanguage(rawCode);
 
     try {
@@ -60,7 +61,7 @@ async function highlightCodeBlocks(html: string): Promise<string> {
   const standaloneMatches = [...result.matchAll(standaloneRegex)];
   for (const match of standaloneMatches) {
     const langAttr = match[1];
-    const rawCode = decodeHtmlEntities(match[2]);
+    const rawCode = decodeCodeBlock(match[2]);
     const lang = langAttr || detectLanguage(rawCode);
 
     try {
@@ -77,14 +78,9 @@ async function highlightCodeBlocks(html: string): Promise<string> {
   return result;
 }
 
-function decodeHtmlEntities(str: string): string {
-  return str
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .trimEnd();
+/** コードブロック用: decodeHtmlEntities + 末尾空白除去 */
+function decodeCodeBlock(str: string): string {
+  return decodeHtmlEntities(str).trimEnd();
 }
 
 /**

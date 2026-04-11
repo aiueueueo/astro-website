@@ -1,5 +1,6 @@
 import type { BlogPost, ArticleData } from '../../types';
 import { formatISODate } from './date';
+import { decodeHtmlEntities } from './html';
 import { SITE_CONFIG } from '../constants';
 
 /**
@@ -28,16 +29,13 @@ export function calculateTotalPages(totalItems: number, itemsPerPage: number): n
  * 記事コンテンツからHTMLタグを除去してプレーンテキストに変換
  */
 export function cleanContentForSearch(content: string): string {
-  return content
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
+  return decodeHtmlEntities(
+    content
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+  )
     .replace(/\s+/g, ' ')
     .trim();
 }
