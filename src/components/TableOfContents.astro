@@ -201,10 +201,18 @@ const filteredHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
   /* アクティブなマーカー（ダイヤモンド型） */
   .toc-nav a.active::before {
     @apply bg-retro-red dark:bg-retro-red !important;
-    width: 8px !important;
-    height: 8px !important;
     border-radius: 1px !important;
     transform: translate(-50%, -50%) rotate(45deg) !important;
+  }
+
+  .toc-nav a.active.toc-link-h2::before {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  .toc-nav a.active.toc-link-h3::before {
+    width: 6px !important;
+    height: 6px !important;
   }
   
   /* 以前のホバー背景色を無効化 */
