@@ -1,6 +1,7 @@
 import type { BlogPost, ArticleData } from '../../types';
 import { formatISODate } from './date';
 import { decodeHtmlEntities } from './html';
+import { optimizeImage } from './image';
 import { SITE_CONFIG } from '../constants';
 
 /**
@@ -10,7 +11,7 @@ export function transformBlogPost(post: BlogPost): ArticleData {
   return {
     title: post.title,
     description: post.description,
-    image: post.heroImage?.url || SITE_CONFIG.DEFAULT_IMAGES.ARTICLE,
+    image: post.heroImage?.url ? optimizeImage(post.heroImage.url, 'THUMBNAIL') : SITE_CONFIG.DEFAULT_IMAGES.ARTICLE,
     tags: post.tags || [],
     date: formatISODate(new Date(post.publishedDate)),
     slug: post.id,

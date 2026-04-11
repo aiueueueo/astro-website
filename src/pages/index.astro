@@ -6,11 +6,18 @@ import ArticleCard from '../components/blog/ArticleCard.astro';
 import InstallPrompt from '../components/InstallPrompt.astro';
 import { getBlogs } from '../lib/microcms';
 import { transformBlogPost } from '../lib/utils/blog';
+import { optimizeImage } from '../lib/utils/image';
 import StructuredData from '../components/StructuredData.astro';
 
-// microCMSから最新5件の記事を取得
+// microCMSから最新5件の記事を取得（ホーム画面はcompact表示なので小さいサムネイル）
 const response = await getBlogs({ limit: 5 });
-const articles = response.contents.map(transformBlogPost);
+const articles = response.contents.map(post => {
+  const article = transformBlogPost(post);
+  return {
+    ...article,
+    image: post.heroImage?.url ? optimizeImage(post.heroImage.url, 'COMPACT') : article.image,
+  };
+});
 ---
 
 <Layout title="Home - aiueueue's blog">
