@@ -1,5 +1,6 @@
 import { createClient } from 'microcms-js-sdk';
-import type { MicroCMSListResponse, MicroCMSImage, MicroCMSDate } from 'microcms-js-sdk';
+import type { MicroCMSListResponse } from 'microcms-js-sdk';
+import type { BlogPost } from '../types';
 
 // microCMSクライアントの初期化
 const client = createClient({
@@ -7,16 +8,8 @@ const client = createClient({
   apiKey: import.meta.env.MICROCMS_API_KEY,
 });
 
-// microCMSのブログ記事の型定義
-export type Blog = {
-  title: string;
-  description?: string;
-  content: string;
-  heroImage?: MicroCMSImage;
-  tags?: string[];
-  publishedDate: string;
-  updatedDate?: string;
-} & MicroCMSDate;
+// microCMS APIのスキーマ型（idはSDKが自動付与するため除外）
+type BlogSchema = Omit<BlogPost, 'id' | 'createdAt' | 'updatedAt' | 'publishedAt' | 'revisedAt'>;
 
 // 記事一覧を取得
 export async function getBlogs(queries?: {
@@ -25,7 +18,7 @@ export async function getBlogs(queries?: {
   orders?: string;
   filters?: string;
 }) {
-  return await client.getList<Blog>({
+  return await client.getList<BlogSchema>({
     endpoint: 'blogs',
     queries: {
       orders: '-publishedDate',
@@ -36,7 +29,7 @@ export async function getBlogs(queries?: {
 
 // 記事の総数を取得
 export async function getBlogCount() {
-  const response = await client.getList<Blog>({
+  const response = await client.getList<BlogSchema>({
     endpoint: 'blogs',
     queries: { limit: 0 },
   });

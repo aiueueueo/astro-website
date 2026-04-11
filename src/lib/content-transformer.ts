@@ -190,6 +190,9 @@ async function fetchOgp(url: string): Promise<OgpData> {
     headers: { 'User-Agent': 'bot' },
     signal: AbortSignal.timeout(5000),
   });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch OGP: ${response.status}`);
+  }
   const html = await response.text();
 
   const getMetaContent = (property: string): string => {

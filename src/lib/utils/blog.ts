@@ -25,13 +25,19 @@ export function calculateTotalPages(totalItems: number, itemsPerPage: number): n
 }
 
 /**
- * 記事コンテンツから関連記事コンポーネントの出力を除外
+ * 記事コンテンツからHTMLタグを除去してプレーンテキストに変換
  */
 export function cleanContentForSearch(content: string): string {
   return content
-    .replace(/<RelatedArticles[\s\S]*?<\/RelatedArticles>/gi, '')
-    .replace(/関連記事[\s\S]*?(?=\n\n|\n#|$)/gi, '')
-    .replace(/## 関連記事[\s\S]*?(?=\n\n|\n#|$)/gi, '')
-    .replace(/### 関連記事[\s\S]*?(?=\n\n|\n#|$)/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
     .trim();
 }
