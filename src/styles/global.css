@@ -100,6 +100,14 @@
     @apply line-through text-stone-400 dark:text-retro-text/50;
   }
 
+  .prose img {
+    @apply max-w-full h-auto rounded-lg my-4;
+  }
+
+  .prose figure {
+    @apply my-4;
+  }
+
   .prose blockquote {
     @apply border-l-4 border-stone-400 dark:border-gray-600 pl-4 my-4 italic text-stone-600 dark:text-retro-text/70;
   }
