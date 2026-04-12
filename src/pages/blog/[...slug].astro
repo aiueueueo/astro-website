@@ -88,6 +88,20 @@ while ((match = headingRegex.exec(transformedContent)) !== null) {
           {post.title}
         </h1>
 
+        <!-- Tags -->
+        {(post.tags || []).length > 0 && (
+          <div class="flex flex-wrap justify-start gap-2 mb-6">
+            {(post.tags || []).map((tag) => (
+              <a
+                href={`/search?q=${encodeURIComponent(tag)}`}
+                class="inline-block px-3 py-1 text-xs bg-retro-green/10 dark:bg-retro-green/20 text-retro-green dark:text-retro-green rounded-full hover:bg-retro-green/20 dark:hover:bg-retro-green/30 transition-colors"
+              >
+                #{tag}
+              </a>
+            ))}
+          </div>
+        )}
+
         <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mb-6 text-sm text-gray-500 dark:text-retro-text/70">
           <div class="flex items-center gap-2">
             <CalendarIcon class="w-4 h-4" />
@@ -106,20 +120,6 @@ while ((match = headingRegex.exec(transformedContent)) !== null) {
             </div>
           )}
         </div>
-
-        <!-- Tags -->
-        {(post.tags || []).length > 0 && (
-          <div class="flex flex-wrap justify-start gap-2 mb-6">
-            {(post.tags || []).map((tag) => (
-              <a
-                href={`/search?q=${encodeURIComponent(tag)}`}
-                class="inline-block px-3 py-1 text-xs bg-retro-green/10 dark:bg-retro-green/20 text-retro-green dark:text-retro-green rounded-full hover:bg-retro-green/20 dark:hover:bg-retro-green/30 transition-colors"
-              >
-                #{tag}
-              </a>
-            ))}
-          </div>
-        )}
       </header>
       </div>
     </div>
